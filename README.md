@@ -10,4 +10,4 @@ https://github.com/AlterRSPS/Alter
 
 ## Mostly Done
 * Util
-* Net/Codec (except: LoginDecoderState.cs)
+* Net (except: Codec/Login/LoginDecoderState.cs, Packet/GamePacketBuilder.cs, Packet/GamePacketReader.cs)

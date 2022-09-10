@@ -12,6 +12,16 @@ static class BinaryReaderExtensions
 			: (stream.ReadInt32() & int.MaxValue);
 	}
 	
+	public static long GetRemaining(this BinaryReader stream)
+	{
+		return stream.BaseStream.GetRemaining();
+	}
+	
+	public static bool IsReadable(this BinaryReader stream)
+	{
+		return stream.BaseStream.IsReadable();
+	}
+	
 }
 
 static class BinaryWriterExtensions

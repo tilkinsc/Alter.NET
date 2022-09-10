@@ -9,5 +9,6 @@ https://github.com/AlterRSPS/Alter
 ## Finished
 
 ## Mostly Done
+* Runelite Cache
 * Util
-* Net/Codec/Filestore
+* Net (except: Codec/Login/LoginDecoderState.cs, Packet/GamePacketBuilder.cs, Packet/GamePacketReader.cs)

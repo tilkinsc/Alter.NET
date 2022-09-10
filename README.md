@@ -10,3 +10,4 @@ https://github.com/AlterRSPS/Alter
 
 ## Mostly Done
 * Util
+* Net/Codec/Filestore

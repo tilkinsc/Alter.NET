@@ -1,0 +1,7 @@
+Solution to ByteBuf.isReadable()
+https://www.demo2s.com/java/java-netty-bytebuf-isreadable.html
+if ((this.writerIndex - this.readerIndex) > 0)
+	return true;
+return false;
+
+

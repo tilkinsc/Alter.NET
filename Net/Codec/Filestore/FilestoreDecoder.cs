@@ -1,3 +1,5 @@
+using DotNetty.Buffers;
+using DotNetty.Transport.Channels;
 using Net.Codec.Login;
 using Util;
 
@@ -22,7 +24,7 @@ class FilestoreDecoder : StatefulFrameDecoder<FilestoreDecoderState>
 		ServerRevision = serverRevision;
 	}
 	
-	private void DecodeRevisionRequest(ChannelHandlerContext ctx, MemoryStream buf)
+	private void DecodeRevisionRequest(IChannelHandlerContext ctx, IByteBuffer buf)
 	{
 		BinaryReader stream = new BinaryReader(buf);
 		if (stream.GetRemaining() >= 4) {
@@ -36,7 +38,7 @@ class FilestoreDecoder : StatefulFrameDecoder<FilestoreDecoderState>
 		}
 	}
 	
-	private void DecodeArchiveRequest(MemoryStream buf, List<object> output)
+	private void DecodeArchiveRequest(IByteBuffer buf, List<object> output)
 	{
 		BinaryReader stream = new BinaryReader(buf);
 		if (!stream.IsReadable())
@@ -66,7 +68,7 @@ class FilestoreDecoder : StatefulFrameDecoder<FilestoreDecoderState>
 		}
 	}
 	
-	public override void Decode(ChannelHandlerContext ctx, MemoryStream buf, List<object> output, FilestoreDecoderState state)
+	public override void Decode(IChannelHandlerContext ctx, IByteBuffer buf, List<object> output, FilestoreDecoderState state)
 	{
 		switch (state)
 		{
@@ -74,7 +76,7 @@ class FilestoreDecoder : StatefulFrameDecoder<FilestoreDecoderState>
 				DecodeRevisionRequest(ctx, buf);
 				break;
 			case FilestoreDecoderState.ARCHIVE_REQUEST:
-				DecodeArchiveRequest(buf, out);
+				DecodeArchiveRequest(buf, output);
 				break;
 			
 		}

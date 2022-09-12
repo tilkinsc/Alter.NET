@@ -41,4 +41,7 @@ class Hit
 		return true;
 	}
 	
+	// TODO: reinstate builder
+	.
+	
 }

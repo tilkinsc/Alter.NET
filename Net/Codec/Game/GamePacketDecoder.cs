@@ -1,3 +1,5 @@
+using DotNetty.Buffers;
+using DotNetty.Transport.Channels;
 using Exceptions;
 using Net.Packet;
 using Util;
@@ -23,24 +25,24 @@ class GamePacketDecoder : StatefulFrameDecoder<GameDecoderState>
 		PacketMetadata = packetMetadata;
 	}
 	
-	private void DecodeOpcode(ChannelHandlerContext ctx, MemoryStream buf, List<object> output)
+	private void DecodeOpcode(IChannelHandlerContext ctx, IByteBuffer buf, List<object> output)
 	{
 		BinaryReader stream = new BinaryReader(buf);
 		if (stream.IsReadable())
 			return;
 		Opcode = stream.ReadByte() - (Random.NextInt()) & 0xFF;
-		PacketType? packetType = PacketMetadata.GetType(opcode);
+		PacketType? packetType = PacketMetadata.GetType(Opcode);
 		if (packetType == null) {
 			buf.Seek(0, SeekOrigin.End);
 			return;
 		}
 		Type = (PacketType) packetType;
-		Ignore = PacketMetadata.ShouldIgnore(opcode);
+		Ignore = PacketMetadata.ShouldIgnore(Opcode);
 		
 		switch (Type)
 		{
 			case PacketType.FIXED:
-				Length = PacketMetadata.GetLength(opcode);
+				Length = PacketMetadata.GetLength(Opcode);
 				if (Length != 0) {
 					SetState(GameDecoderState.PAYLOAD);
 				} else if (!Ignore) {
@@ -56,7 +58,7 @@ class GamePacketDecoder : StatefulFrameDecoder<GameDecoderState>
 		}
 	}
 	
-	private void DecodeLength(MemoryStream buf, List<object> output)
+	private void DecodeLength(IByteBuffer buf, List<object> output)
 	{
 		BinaryReader stream = new BinaryReader(buf);
 		if (!stream.IsReadable())
@@ -69,7 +71,7 @@ class GamePacketDecoder : StatefulFrameDecoder<GameDecoderState>
 		}
 	}
 	
-	private void DecodePayload(MemoryStream buf, List<object> output)
+	private void DecodePayload(IByteBuffer buf, List<object> output)
 	{
 		BinaryReader stream = new BinaryReader(buf);
 		if (!stream.IsReadable())
@@ -82,7 +84,7 @@ class GamePacketDecoder : StatefulFrameDecoder<GameDecoderState>
 		}
 	}
 	
-	public override void Decode(ChannelHandlerContext ctx, MemoryStream buf, List<object> output, GameDecoderState state)
+	public override void Decode(IChannelHandlerContext ctx, IByteBuffer buf, List<object> output, GameDecoderState state)
 	{
 		switch (state)
 		{

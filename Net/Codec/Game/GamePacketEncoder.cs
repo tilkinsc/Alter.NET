@@ -1,9 +1,12 @@
+using DotNetty.Buffers;
+using DotNetty.Codecs;
+using DotNetty.Transport.Channels;
 using Net.Packet;
 using Util.IO;
 
 namespace Net.Codec.Game;
 
-class GamePacketEncoder : MessageToByteEncode<GamePacket>
+class GamePacketEncoder : MessageToByteEncoder<GamePacket>
 {
 	
 	private IsaacRandom? Random;
@@ -13,7 +16,7 @@ class GamePacketEncoder : MessageToByteEncode<GamePacket>
 		Random = random;
 	}
 	
-	public override void Encode(ChannelHandlerContext, GamePacket msg, MemoryStream output)
+	protected override void Encode(IChannelHandlerContext ctx, GamePacket msg, IByteBuffer output)
 	{
 		if (msg.Type == PacketType.VARIABLE_BYTE && msg.Length >= 256) {
 			return;

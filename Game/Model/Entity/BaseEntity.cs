@@ -1,5 +1,3 @@
-using Game.Model.Entity;
-
 namespace Game.Model.Entity;
 
 abstract class BaseEntity

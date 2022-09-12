@@ -233,11 +233,13 @@ class Chunk
 		}
 	}
 	
+	// TODO: I dont know how to translate this
 	public List<T> GetEntities<T>(params EntityType[] types)
 	{
 		
 	}
 	
+	// TODO: I dont know how to translate this
 	public List<T> GetEntities<T>(Tile tile, params EntityType[] types)
 	{
 		

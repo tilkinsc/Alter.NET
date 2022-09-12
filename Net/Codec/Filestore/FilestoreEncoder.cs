@@ -1,9 +1,13 @@
+using DotNetty.Buffers;
+using DotNetty.Codecs;
+using DotNetty.Transport.Channels;
+
 namespace Net.Codec.Filestore;
 
 class FilestoreEncoder : MessageToByteEncoder<FilestoreResponse>
 {
 	
-	public override void Encode(ChannelHandlerContext ctx, FilestoreResponse msg, MemoryStream output)
+	public override void Encode(IChannelHandlerContext ctx, FilestoreResponse msg, IByteBuffer output)
 	{
 		BinaryWriter writer = new BinaryWriter(output);
 		writer.Write((byte) msg.Index);

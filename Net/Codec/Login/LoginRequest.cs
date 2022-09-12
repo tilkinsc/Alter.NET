@@ -1,9 +1,11 @@
+using DotNetty.Transport.Channels;
+
 namespace Net.Codec.Login;
 
 class LoginRequest : IEquatable<LoginRequest>
 {
 	
-	public Channel Channel;
+	public IChannel Channel;
 	public string Username;
 	public string Password;
 	public int Revision;
@@ -15,7 +17,7 @@ class LoginRequest : IEquatable<LoginRequest>
 	public int ClientHeight;
 	public bool Reconnecting;
 	
-	public LoginRequest(Channel channel, string username, string password, int revision,
+	public LoginRequest(IChannel channel, string username, string password, int revision,
 			int[] xteaKeys, bool resizableClient, int auth, string uuid, int clientWidth,
 			int clientHeight, bool reconnecting)
 	{

@@ -1,3 +1,7 @@
+using DotNetty.Buffers;
+using DotNetty.Codecs;
+using DotNetty.Transport.Channels;
+
 namespace Net.Codec;
 
 abstract class StatefulFrameDecoder<T> : ByteToMessageDecoder where T : System.Enum
@@ -15,11 +19,11 @@ abstract class StatefulFrameDecoder<T> : ByteToMessageDecoder where T : System.E
 		State = state;
 	}
 	
-	public abstract void Decode(ChannelHandlerContext, MemoryStream buf, List<object> output, T state);
+	public abstract void Decode(IChannelHandlerContext ctx, IByteBuffer buf, List<object> output, T state);
 	
-	public override void Decode(ChannelHandlerContext ctx, MemoryStream buf, List<object> output)
+	protected override void Decode(IChannelHandlerContext ctx, IByteBuffer buf, List<object> output)
 	{
-		Decode(ctx, buf, output, state);
+		Decode(ctx, buf, output, State);
 	}
 	
 }

@@ -1,5 +1,7 @@
 using Game.FS;
 using Game.FS.Def;
+using Game.Model.Attr;
+using Game.Model.Timer;
 
 namespace Game.Model.Entity;
 
@@ -9,8 +11,8 @@ class GameObject : BaseEntity
 	public int ID;
 	public byte Settings;
 	
-	public AttributeMap AttributeMap;
-	public TimerMap TimerMap;
+	public AttributeMap AttributeMap = new AttributeMap();
+	public TimerMap TimerMap = new TimerMap();
 	
 	public int Type { get => Settings >> 2; }
 	public int Rotation { get => Settings & 0x3; }
@@ -27,9 +29,9 @@ class GameObject : BaseEntity
 	{
 	}
 	
-	public ObjectDef GetObjectDef(DefinitionSet definitions)
+	public ObjectDef? GetObjectDef(DefinitionSet definitions)
 	{
-		return definitions.get(typeof(ObjectDef), id);
+		return definitions.Get<ObjectDef>(ID);
 	}
 	
 	public bool IsSpawned(World world)
@@ -40,7 +42,7 @@ class GameObject : BaseEntity
 	public int GetTransform(Player player)
 	{
 		World world = player.World;
-		ObjectDef def = GetObjectDef(world.Definitions);
+		ObjectDef? def = GetObjectDef(world.Definitions);
 		
 		if (def.VarBit != -1) {
 			VarbitDef varbitDef = world.Definitions.get(VarbitDef::class.java, def.VarBit);

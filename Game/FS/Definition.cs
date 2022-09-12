@@ -1,20 +1,7 @@
-using System.Text;
+using Util.IO;
+using DotNetty.Buffers;
 
 namespace Game.FS;
-
-static class BinaryReaderExtensions
-{
-	
-	// TODO: check for accuracy
-	
-	public static int ReadUnsignedMedium(this BinaryReader stream)
-	{
-		ushort firstTwo = stream.ReadUInt16();
-		byte last = stream.ReadByte();
-		return (last << 16) | firstTwo;
-	}
-	
-}
 
 abstract class Definition
 {
@@ -26,40 +13,33 @@ abstract class Definition
 		ID = id;
 	}
 	
-	public void Decode(MemoryStream buffer)
+	public void Decode(IByteBuffer buf)
 	{
-		BinaryReader stream = new BinaryReader(buffer);
-		
 		while (true)
 		{
-			int opcode = ((int) stream.ReadByte());
+			int opcode = buf.ReadByte();
 			if (opcode == 0)
 				break;
-			Decode(buffer, opcode);
+			Decode(buf, opcode);
 		}
 	}
 	
-	public virtual void Decode(MemoryStream buffer, int opcode) {}
+	public virtual void Decode(IByteBuffer buffer, int opcode) {}
 	
-	// TODO: check for accuracy
-	public Dictionary<int, object> ReadParams(MemoryStream buffer)
+	public Dictionary<int, object> ReadParams(IByteBuffer buf)
 	{
 		Dictionary<int, object> map = new Dictionary<int, object>();
-		
-		BinaryReader stream = new BinaryReader(buffer, Encoding.ASCII, true);
-		
-		int length = (int) stream.ReadByte();
+		int length = (int) buf.ReadByte();
 		for (int i=0; i<length; i++)
 		{
-			bool isString = ((int) stream.ReadByte()) == 1;
-			int id = stream.ReadUnsignedMedium();
+			bool isString = buf.ReadByte() == 1;
+			int id = buf.ReadUnsignedMedium();
 			if (isString) {
-				map[id] = stream.ReadString();
+				map[id] = buf.ReadString();
 			} else {
-				map[id] = stream.ReadInt32();
+				map[id] = buf.ReadInt();
 			}
 		}
-		
 		return map;
 	}
 	

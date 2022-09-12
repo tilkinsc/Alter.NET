@@ -15,6 +15,12 @@ class Direction
 	public static readonly Direction SOUTH = new Direction(6, 1, 6);
 	public static readonly Direction SOUTH_EAST = new Direction(7, 2, 7);
 	
+	public static readonly Direction[] NESW = new Direction[] {NORTH, EAST, SOUTH, WEST};
+	public static readonly Direction[] WNES = new Direction[] {WEST, NORTH, EAST, SOUTH};
+	public static readonly Direction[] WNES_DIAGONAL = new Direction[] {NORTH_WEST, NORTH_EAST, SOUTH_EAST, SOUTH_WEST};
+	public static readonly Direction[] RS_ORDER = new Direction[] {WEST, EAST, NORTH, SOUTH, SOUTH_WEST, SOUTH_EAST, NORTH_WEST, NORTH_EAST};
+	public static readonly Direction[] ANGLED_ORDER = new Direction[] {NORTH, NORTH_EAST, EAST, SOUTH_EAST, SOUTH, SOUTH_WEST, WEST, NORTH_WEST};
+	
 	public int OrientationValue { get; }
 	public int PlayerWalkValue { get; }
 	public int NpcWalkValue { get; }
@@ -103,12 +109,6 @@ class Direction
 			return 1792;
 		throw new IllegalStateException($"Invalid direction {this}");
 	}
-	
-	public static List<Direction> NESW = new List<Direction>(new Direction[] {NORTH, EAST, SOUTH, WEST});
-	public static List<Direction> WNES = new List<Direction>(new Direction[] {WEST, NORTH, EAST, SOUTH});
-	public static List<Direction> WNES_DIAGONAL = new List<Direction>(new Direction[] {NORTH_WEST, NORTH_EAST, SOUTH_EAST, SOUTH_WEST});
-	public static List<Direction> RS_ORDER = new List<Direction>(new Direction[] {WEST, EAST, NORTH, SOUTH, SOUTH_WEST, SOUTH_EAST, NORTH_WEST, NORTH_EAST});
-	public static List<Direction> ANGLED_ORDER = new List<Direction>(new Direction[] {NORTH, NORTH_EAST, EAST, SOUTH_EAST, SOUTH, SOUTH_WEST, WEST, NORTH_WEST});
 	
 	public static Direction GetForAngle(int angle) => ANGLED_ORDER[angle / 45];
 	

@@ -2,6 +2,7 @@ using Cache;
 using Cache.Definitions;
 using Cache.FS;
 using Cache.Region;
+using DotNetty.Buffers;
 using Exceptions;
 using Game.FS.Def;
 using Game.Model;
@@ -21,24 +22,16 @@ class DefinitionSet
 	
 	public void LoadAll(RLStore store)
 	{
-		
 		Load<AnimDef>(store, typeof(AnimDef));
-		
 		Load<VarBitDef>(store, typeof(VarBitDef));
-		
 		Load<EnumDef>(store, typeof(EnumDef));
-		
 		Load<StructDef>(store, typeof(StructDef));
-		
 		Load<NpcDef>(store, typeof(NpcDef));
-		
 		Load<ItemDef>(store, typeof(ItemDef));
-		
 		Load<ObjectDef>(store, typeof(ObjectDef));
-		
 	}
 	
-	public void LoadRegions(World world, ChunkSet chunks, List<int> regions)
+	public void LoadRegions(World world, ChunkSet chunks, int[] regions)
 	{
 		int loaded = 0;
 		foreach (int region in regions)
@@ -73,7 +66,7 @@ class DefinitionSet
 		} else {
 			throw new IllegalArgumentException($"Unhandled class type {type.FullName}");
 		}
-		Cache.FS.RLIndex? configs = store.GetIndex(RLIndexType.CONFIGS);
+		RLIndex? configs = store.GetIndex(RLIndexType.CONFIGS);
 		if (configs == null) {
 			throw new FileNotFoundException("Cache was not found");
 		}
@@ -111,9 +104,9 @@ class DefinitionSet
 			throw new IllegalArgumentException($"Unhandled class type {type.FullName}");
 		}
 		
-		MemoryStream mem = new MemoryStream(data);
-		def.Decode(mem);
-		mem.Dispose();
+		IByteBuffer buf = Unpooled.WrappedBuffer(data);
+		def.Decode(buf);
+		buf.Release();
 		return (T) def;
 	}
 	
@@ -122,11 +115,10 @@ class DefinitionSet
 		return Definitions[type].Count;
 	}
 	
-	public T?  Get<T>(Type type, int id) where T : Definition
+	public T? Get<T>(int id) where T : Definition
 	{
-		return (Definitions[type])[id] as T;
+		return (Definitions[typeof(T)])[id] as T;
 	}
-	
 	
 	public bool CreateRegion(World world, int id)
 	{

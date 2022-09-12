@@ -1,5 +1,4 @@
 using Game.Model.Entity;
-using Game.Model.Entity;
 using Util;
 
 namespace Game.Model.Combat;

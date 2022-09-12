@@ -1,10 +1,12 @@
+using DotNetty.Buffers;
+
 namespace Game.FS.Def;
 
 class AnimDef : Definition
 {
 	
-	public List<int> FrameIDs = new List<int>();
-	public List<int> FrameLengths = new List<int>();
+	public int[]? FrameIDs;
+	public int[]? FrameLengths;
 	public int Priority = -1;
 	public int LengthInCycles = 0;
 	
@@ -13,21 +15,20 @@ class AnimDef : Definition
 	{
 	}
 	
-	public override void Decode(MemoryStream buffer, int opcode)
+	public override void Decode(IByteBuffer buf, int opcode)
 	{
-		BinaryReader stream = new BinaryReader(buffer);
 		switch (opcode)
 		{
 			case 1:
 			{
-				int frameCount = stream.ReadUInt16();
+				int frameCount = buf.ReadUnsignedShort();
 				int totalFrameLength = 0;
-				FrameIDs = new List<int>(frameCount);
-				FrameLengths = new List<int>(frameCount);
+				FrameIDs = new int[frameCount];
+				FrameLengths = new int[frameCount];
 				
 				for (int i=0; i<frameCount; i++)
 				{
-					FrameLengths[i] = stream.ReadUInt16();
+					FrameLengths[i] = buf.ReadUnsignedShort();
 					if (i < frameCount - 1 || FrameLengths[i] < 200) {
 						totalFrameLength += FrameLengths[i];
 					}
@@ -35,12 +36,12 @@ class AnimDef : Definition
 				
 				for (int i=0; i<frameCount; i++)
 				{
-					FrameIDs[i] = stream.ReadUInt16();
+					FrameIDs[i] = buf.ReadUnsignedShort();
 				}
 				
 				for (int i=0; i<frameCount; i++)
 				{
-					FrameIDs[i] += stream.ReadUInt16() << 16;
+					FrameIDs[i] += buf.ReadUnsignedShort() << 16;
 				}
 				
 				LengthInCycles = (int) Math.Ceiling((totalFrameLength * 20.0) / 600.0);
@@ -48,62 +49,61 @@ class AnimDef : Definition
 			}
 			case 2:
 			{
-				stream.ReadUInt16();
+				buf.ReadUnsignedShort();
 				break;
 			}
 			case 3:
 			{
-				int count = stream.ReadByte();
+				int count = buf.ReadByte();
 				for (int i=0; i<count; i++)
 				{
-					stream.ReadByte();
+					buf.ReadByte();
 				}
 				break;
 			}
 			case 5:
 			{
-				stream.ReadByte();
+				buf.ReadByte();
 				break;
 			}
 			case 6:
 			case 7:
 			{
-				stream.ReadUInt16();
+				buf.ReadUnsignedShort();
 				break;
 			}
 			case 8:
 			case 9:
 			{
-				stream.ReadByte();
+				buf.ReadByte();
 				break;
 			}
 			case 10:
 			{
-				Priority = stream.ReadByte();
+				Priority = buf.ReadByte();
 				break;
 			}
 			case 11:
 			{
-				stream.ReadByte();
+				buf.ReadByte();
 				break;
 			}
 			case 12:
 			{
-				int count = stream.ReadByte();
+				int count = buf.ReadByte();
 				for (int i=0; i<count; i++)
 				{
-					stream.ReadUInt16();
-					stream.ReadUInt16();
+					buf.ReadUnsignedShort();
+					buf.ReadUnsignedShort();
 				}
 				break;
 			}
 			case 13:
 			{
-				int count = stream.ReadByte();
+				int count = buf.ReadByte();
 				for (int i=0; i<count; i++)
 				{
-					// TODO: check if correct
-					stream.ReadUnsignedMedium();
+					buf.ReadMedium();
 				}
 				break;
 			}

@@ -2,9 +2,18 @@ namespace Game;
 
 class DevContext
 {
-	public bool DebugExamines { get; set; }
-	public bool DebugObjects { get; set; }
-	public bool DebugButtons { get; set; }
-	public bool DebugItemActions { get; set; }
-	public bool DebugMagicSpells { get; set; }
+	public bool DebugExamines;
+	public bool DebugObjects;
+	public bool DebugButtons;
+	public bool DebugItemActions;
+	public bool DebugMagicSpells;
+	
+	public DevContext(bool debugExamines, bool debugObjects, bool debugButtons, bool debugItemActions, bool debugMagicSpells)
+	{
+		DebugExamines = debugExamines;
+		DebugObjects = debugObjects;
+		DebugButtons = debugButtons;
+		DebugItemActions = debugItemActions;
+		DebugMagicSpells = debugMagicSpells;
+	}
 }

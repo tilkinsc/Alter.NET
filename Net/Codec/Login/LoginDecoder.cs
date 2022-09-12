@@ -1,4 +1,6 @@
 using System.Numerics;
+using DotNetty.Buffers;
+using DotNetty.Transport.Channels;
 
 namespace Net.Codec.Login;
 
@@ -37,7 +39,7 @@ class LoginDecoder : StatefulFrameDecoder<LoginDecoderState>
 		RSAModulus = rsaModulus;
 	}
 	
-	private void DecodeHandshake(ChannelHandlerContext ctx, MemoryStream buf)
+	private void DecodeHandshake(IChannelHandlerContext ctx, IByteBuffer buf)
 	{
 		BinaryReader stream = new BinaryReader(buf);
 		if (buf.Length > 0) {
@@ -51,7 +53,7 @@ class LoginDecoder : StatefulFrameDecoder<LoginDecoderState>
 		}
 	}
 	
-	private void DecodePayload(ChannelHandlerContext ctx, MemoryStream buf, List<object> output)
+	private void DecodePayload(IChannelHandlerContext ctx, IByteBuffer buf, List<object> output)
 	{
 		if (buf.Length >= PayloadLength) {
 			BufferPosition = buf.Position;
@@ -60,7 +62,7 @@ class LoginDecoder : StatefulFrameDecoder<LoginDecoderState>
 		}
 	}
 	
-	private void DecodeHeader(ChannelHandlerContext ctx, MemoryStream buf, List<object> output)
+	private void DecodeHeader(IChannelHandlerContext ctx, IByteBuffer buf, List<object> output)
 	{
 		BinaryReader stream = new BinaryReader(buf);
 		if (buf.Length >= 3) {
@@ -82,7 +84,7 @@ class LoginDecoder : StatefulFrameDecoder<LoginDecoderState>
 		}
 	}
 	
-	public override void Decode(ChannelHandlerContext ctx, MemoryStream buf, List<object> output, LoginDecoderState state)
+	public override void Decode(IChannelHandlerContext ctx, IByteBuffer buf, List<object> output, LoginDecoderState state)
 	{
 		BufferPosition = buf.Position;
 		switch (state)

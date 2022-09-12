@@ -1,3 +1,5 @@
+using DotNetty.Buffers;
+
 namespace Game.FS.Def;
 
 class VarpDef : Definition
@@ -9,6 +11,13 @@ class VarpDef : Definition
 		: base(id)
 	{
 		ConfigType = 0;
+	}
+	
+	public override void Decode(IByteBuffer buf, int opcode)
+	{
+		if (opcode == 5) {
+			ConfigType = buf.ReadUnsignedShort();
+		}
 	}
 
 }

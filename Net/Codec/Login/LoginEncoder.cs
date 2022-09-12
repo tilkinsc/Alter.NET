@@ -1,9 +1,13 @@
+using DotNetty.Buffers;
+using DotNetty.Codecs;
+using DotNetty.Transport.Channels;
+
 namespace Net.Codec.Login;
 
 class LoginEncoder : MessageToByteEncoder<LoginResponse>
 {
 	
-	public override void Encode(ChannelHandlerContext ctx, LoginResponse msg, MemoryStream output)
+	protected override void Encode(IChannelHandlerContext ctx, LoginResponse msg, IByteBuffer output)
 	{
 		BinaryWriter stream = new BinaryWriter(output);
 		stream.Write((byte) 2);

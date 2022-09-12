@@ -1,3 +1,5 @@
+using DotNetty.Buffers;
+
 namespace Game.FS.Def;
 
 class VarBitDef : Definition
@@ -15,13 +17,12 @@ class VarBitDef : Definition
 		EndBit = 0;
 	}
 
-	public override void Decode(MemoryStream buffer, int opcode)
+	public override void Decode(IByteBuffer buf, int opcode)
 	{
 		if (opcode == 1) {
-			BinaryReader stream = new BinaryReader(buffer);
-			Varp = stream.ReadUInt16();
-			StartBit = stream.ReadByte();
-			EndBit = stream.ReadByte();
+			Varp = buf.ReadUnsignedShort();
+			StartBit = buf.ReadByte();
+			EndBit = buf.ReadByte();
 		}
 	}
 

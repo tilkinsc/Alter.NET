@@ -1,3 +1,5 @@
+using Net.Packet;
+
 namespace Game.Message;
 
 class MessageValue
@@ -5,7 +7,7 @@ class MessageValue
 	public string ID;
 	public DataOrder Order;
 	public DataTransformation Transformation;
-	public DateType Type;
+	public DataType Type;
 	public DataSignature Signature;
 	
 	public MessageValue(string id, DataOrder order, DataTransformation transformation, DataType type, DataSignature signature)

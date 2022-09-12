@@ -7,6 +7,7 @@ using Game.Model.Entity;
 using Game.Model.Region;
 using Game.Model.Timer;
 using Game.Service.Xtea;
+using Game.Sync.Block;
 
 namespace Game.Model;
 

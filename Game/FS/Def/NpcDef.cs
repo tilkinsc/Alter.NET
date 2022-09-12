@@ -1,4 +1,6 @@
+using DotNetty.Buffers;
 using Util;
+using Util.IO;
 
 namespace Game.FS.Def;
 
@@ -42,59 +44,58 @@ class NpcDef : Definition
 		return CombatLevel > 0 && Options.Contains("Attack");
 	}
 	
-	public override void Decode(MemoryStream buffer, int opcode)
+	public override void Decode(IByteBuffer buf, int opcode)
 	{
-		BinaryReader stream = new BinaryReader(buffer);
 		switch (opcode)
 		{
 			case 1:
 			{
-				int count = stream.ReadByte();
+				int count = buf.ReadByte();
 				for (int i=0; i<count; i++)
-					stream.ReadByte();
+					buf.ReadUnsignedShort();
 				break;
 			}
 			case 2:
 			{
-				Name = stream.ReadString();
+				Name = buf.ReadString();
 				break;
 			}
 			case 12:
 			{
-				Size = stream.ReadByte();
+				Size = buf.ReadByte();
 				break;
 			}
 			case 13:
 			{
-				StandAnim = stream.ReadUInt16();
+				StandAnim = buf.ReadUnsignedShort();
 				break;
 			}
 			case 14:
 			{
-				WalkAnim = stream.ReadUInt16();
+				WalkAnim = buf.ReadUnsignedShort();
 				break;
 			}
 			case 15:
 			{
-				RotateLeftAnim = stream.ReadUInt16();
+				RotateLeftAnim = buf.ReadUnsignedShort();
 				break;
 			}
 			case 16:
 			{
-				RotateRightAnim = stream.ReadUInt16();
+				RotateRightAnim = buf.ReadUnsignedShort();
 				break;
 			}
 			case 17:
 			{
-				WalkAnim = stream.ReadUInt16();
-				Rotate180Anim = stream.ReadUInt16();
-				Rotate90AnimCW = stream.ReadUInt16();
-				Rotate90AnimCCW = stream.ReadUInt16();
+				WalkAnim = buf.ReadUnsignedShort();
+				Rotate180Anim = buf.ReadUnsignedShort();
+				Rotate90AnimCW = buf.ReadUnsignedShort();
+				Rotate90AnimCCW = buf.ReadUnsignedShort();
 				break;
 			}
 			case 18:
 			{
-				Category = stream.ReadUInt16();
+				Category = buf.ReadUnsignedShort();
 				break;
 			}
 			case 30:
@@ -103,7 +104,7 @@ class NpcDef : Definition
 			case 33:
 			case 34:
 			{
-				string read = stream.ReadString();
+				string read = buf.ReadString();
 				if (read.Equals("null") || read.Equals("hidden")) {
 					Options[opcode - 30] = null;
 					break;
@@ -114,21 +115,21 @@ class NpcDef : Definition
 			case 40:
 			case 41:
 			{
-				int count = stream.ReadByte();
+				int count = buf.ReadByte();
 				for (int i=0; i<count; i++)
 				{
-					stream.ReadUInt16();
-					stream.ReadUInt16();
+					buf.ReadUnsignedShort();
+					buf.ReadUnsignedShort();
 				}
 				break;
 			}
 			case 60:
 			{
-				int count = stream.ReadByte();
+				int count = buf.ReadByte();
 				ChatHeadModels = new List<int>(count);
 				for (int i=0; i<count; i++)
 				{
-					ChatHeadModels.Add(stream.ReadUInt16());
+					ChatHeadModels.Add(buf.ReadUnsignedShort());
 				}
 				break;
 			}
@@ -139,17 +140,17 @@ class NpcDef : Definition
 			}
 			case 95:
 			{
-				CombatLevel = stream.ReadUInt16();
+				CombatLevel = buf.ReadUnsignedShort();
 				break;
 			}
 			case 97:
 			{
-				WidthScale = stream.ReadUInt16();
+				WidthScale = buf.ReadUnsignedShort();
 				break;
 			}
 			case 98:
 			{
-				heightScale = stream.ReadUInt16();
+				heightScale = buf.ReadUnsignedShort();
 				break;
 			}
 			case 99:
@@ -160,45 +161,45 @@ class NpcDef : Definition
 			case 100:
 			case 101:
 			{
-				stream.ReadByte();
+				buf.ReadByte();
 				break;
 			}
 			case 102:
 			{
-				HeadIcon = stream.ReadUInt16();
+				HeadIcon = buf.ReadUnsignedShort();
 				break;
 			}
 			case 103:
 			{
-				stream.ReadUInt16();
+				buf.ReadUnsignedShort();
 				break;
 			}
 			case 106:
 			case 118:
 			{
-				VarBit = stream.ReadUInt16();
+				VarBit = buf.ReadUnsignedShort();
 				if (VarBit == 65535) {
 					VarBit = -1;
 				}
 				
-				Varp = stream.ReadUInt16();
+				Varp = buf.ReadUnsignedShort();
 				if (Varp == 65535) {
 					Varp = -1;
 				}
 				
 				int terminatingTransform = -1;
 				if (opcode == 118) {
-					terminatingTransform = stream.ReadUInt16();
+					terminatingTransform = buf.ReadUnsignedShort();
 					if (terminatingTransform == 65535) {
 						terminatingTransform = -1;
 					}
 				}
 				
-				int count = stream.ReadByte();
+				int count = buf.ReadByte();
 				int[] trans = new int[count + 2];
 				for (int i=0; i<count + 1; i++)
 				{
-					int transform = stream.ReadUInt16();
+					int transform = buf.ReadUnsignedShort();
 					if (transform == 65535) {
 						transform = -1;
 					}
@@ -220,7 +221,7 @@ class NpcDef : Definition
 			}
 			case 249:
 			{
-				Params.Merge<int, object>(ReadParams(buffer));
+				Params.Merge<int, object>(ReadParams(buf));
 				break;
 			}
 		}

@@ -1,6 +1,8 @@
 using System.Text;
 using Util;
 using Game.Model.Entity;
+using DotNetty.Buffers;
+using Util.IO;
 
 namespace Game.FS.Def;
 
@@ -46,41 +48,40 @@ class ObjectDef : Definition
 		return Length;
 	}
 	
-	public override void Decode(MemoryStream buffer, int opcode)
+	public override void Decode(IByteBuffer buf, int opcode)
 	{
-		BinaryReader stream = new BinaryReader(buffer, Encoding.ASCII, true);
 		switch (opcode)
 		{
 			case 1:
 			{
-				byte count = stream.ReadByte();
+				byte count = buf.ReadByte();
 				for (int i=0; i<count; i++)
 				{
-					stream.ReadUInt16();
-					stream.ReadByte();
+					buf.ReadUnsignedShort();
+					buf.ReadByte();
 				}
 				break;
 			}
 			case 2:
 			{
-				Name = stream.ReadString();
+				Name = buf.ReadString();
 				break;
 			}
 			case 5:
 			{
-				byte count = stream.ReadByte();
+				byte count = buf.ReadByte();
 				for (int i=0; i<count; i++)
-					stream.ReadUInt16();
+					buf.ReadUnsignedShort();
 				break;
 			}
 			case 14:
 			{
-				Width = stream.ReadByte();
+				Width = buf.ReadByte();
 				break;
 			}
 			case 15:
 			{
-				Length = stream.ReadByte();
+				Length = buf.ReadByte();
 				break;
 			}
 			case 17:
@@ -95,12 +96,12 @@ class ObjectDef : Definition
 			}
 			case 19:
 			{
-				IsInteractive = stream.ReadByte() == 1;
+				IsInteractive = buf.ReadByte() == 1;
 				break;
 			}
 			case 24:
 			{
-				Animation = stream.ReadUInt16();
+				Animation = buf.ReadUnsignedShort();
 				break;
 			}
 			case 27:
@@ -109,12 +110,12 @@ class ObjectDef : Definition
 			}
 			case 28:
 			{
-				stream.ReadByte();
+				buf.ReadByte();
 				break;
 			}
 			case 29:
 			{
-				stream.ReadByte();
+				buf.ReadByte();
 				break;
 			}
 			case 30:
@@ -123,7 +124,7 @@ class ObjectDef : Definition
 			case 33:
 			case 34:
 			{
-				string str = stream.ReadString();
+				string str = buf.ReadString();
 				Options[opcode - 30] = str;
 				if (str.Equals("null") || str.Equals("hidden")) {
 					Options[opcode - 30] = null;
@@ -132,32 +133,32 @@ class ObjectDef : Definition
 			}
 			case 39:
 			{
-				stream.ReadByte();
+				buf.ReadByte();
 				break;
 			}
 			case 40:
 			{
-				byte count = stream.ReadByte();
+				byte count = buf.ReadByte();
 				for (int i=0; i<count; i++)
 				{
-					stream.ReadUInt16();
-					stream.ReadUInt16();
+					buf.ReadUnsignedShort();
+					buf.ReadUnsignedShort();
 				}
 				break;
 			}
 			case 41:
 			{
-				byte count = stream.ReadByte();
+				byte count = buf.ReadByte();
 				for (int i=0; i<count; i++)
 				{
-					stream.ReadUInt16();
-					stream.ReadUInt16();
+					buf.ReadUnsignedShort();
+					buf.ReadUnsignedShort();
 				}
 				break;
 			}
 			case 61:
 			{
-				Category = stream.ReadUInt16();
+				Category = buf.ReadUnsignedShort();
 				break;
 			}
 			case 62:
@@ -170,19 +171,19 @@ class ObjectDef : Definition
 			case 67:
 			case 68:
 			{
-				stream.ReadUInt16();
+				buf.ReadUnsignedShort();
 				break;
 			}
 			case 69:
 			{
-				ClipMask = stream.ReadByte();
+				ClipMask = buf.ReadByte();
 				break;
 			}
 			case 70:
 			case 71:
 			case 72:
 			{
-				stream.ReadUInt16();
+				buf.ReadShort();
 				break;
 			}
 			case 73:
@@ -192,35 +193,35 @@ class ObjectDef : Definition
 			}
 			case 75:
 			{
-				stream.ReadByte();
+				buf.ReadByte();
 				break;
 			}
 			case 77:
 			case 92:
 			{
-				VarBit = stream.ReadUInt16();
+				VarBit = buf.ReadUnsignedShort();
 				if (VarBit == 65535) {
 					VarBit = -1;
 				}
 				
-				Varp = stream.ReadUInt16();
+				Varp = buf.ReadUnsignedShort();
 				if (Varp == 65535) {
 					Varp = -1;
 				}
 				
 				int terminatingTransform = -1;
 				if (opcode == 92) {
-					terminatingTransform = stream.ReadUInt16();
+					terminatingTransform = buf.ReadUnsignedShort();
 					if (terminatingTransform == 65535) {
 						terminatingTransform = -1;
 					}
 				}
 				
-				int count = stream.ReadByte();
+				int count = buf.ReadByte();
 				int[] trans = new int[count + 2];
 				for (int i=0; i<count + 1; i++)
 				{
-					int transform = stream.ReadUInt16();
+					int transform = buf.ReadUnsignedShort();
 					if (transform == 65535)
 						transform = -1;
 					trans[i] = transform;
@@ -231,35 +232,35 @@ class ObjectDef : Definition
 			}
 			case 78:
 			{
-				stream.ReadUInt16();
-				stream.ReadByte();
+				buf.ReadUnsignedShort();
+				buf.ReadByte();
 				break;
 			}
 			case 79:
 			{
-				stream.ReadUInt16();
-				stream.ReadUInt16();
-				stream.ReadByte();
-				int count = stream.ReadByte();
+				buf.ReadUnsignedShort();
+				buf.ReadUnsignedShort();
+				buf.ReadByte();
+				int count = buf.ReadByte();
 				for (int i=0; i<count; i++)
 				{
-					stream.ReadUInt16();
+					buf.ReadUnsignedShort();
 				}
 				break;
 			}
 			case 81:
 			{
-				stream.ReadByte();
+				buf.ReadByte();
 				break;
 			}
 			case 82:
 			{
-				stream.ReadUInt16();
+				buf.ReadUnsignedShort();
 				break;
 			}
 			case 249:
 			{
-				Parameters.Merge<int, object>(ReadParams(buffer));
+					Parameters.Merge(ReadParams(buf));
 				break;
 			}
 		}

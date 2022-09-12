@@ -1,5 +1,3 @@
-using Game.Model;
-
 namespace Game.Model;
 
 class ForcedMovement : IEquatable<ForcedMovement>

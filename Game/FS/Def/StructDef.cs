@@ -1,3 +1,4 @@
+using DotNetty.Buffers;
 using Util;
 
 namespace Game.FS.Def;
@@ -12,10 +13,10 @@ class StructDef : Definition
 	{
 	}
 
-	public override void Decode(MemoryStream buffer, int opcode)
+	public override void Decode(IByteBuffer buf, int opcode)
 	{
 		if (opcode == 249) {
-			Params.Merge<int, object>(ReadParams(buffer));
+			Params.Merge<int, object>(ReadParams(buf));
 		}
 	}
 

@@ -1,4 +1,6 @@
+using DotNetty.Buffers;
 using Util;
+using Util.IO;
 
 namespace Game.FS.Def;
 
@@ -28,9 +30,9 @@ class ItemDef : Definition
 	public int EquipSlot = -1;
 	public int EquipType = 0;
 	public int WeaponType = -1;
-	public List<int>? RenderAnimations;
+	public int[]? RenderAnimations;
 	public Dictionary<byte, byte>? SkillRequirements;
-	public List<int>? Bonuses;
+	public int[]? Bonuses;
 
 	public bool IsStackable { get => Stacks || NoteTemplateId > 0; }
 	public bool IsNoted { get => NoteTemplateId > 0; }
@@ -41,24 +43,23 @@ class ItemDef : Definition
 	{
 	}
 	
-	public override void Decode(MemoryStream buffer, int opcode)
+	public override void Decode(IByteBuffer buf, int opcode)
 	{
-		BinaryReader stream = new BinaryReader(buffer);
 		switch (opcode)
 		{
 			case 1:
 			{
-				stream.ReadUInt16();
+				buf.ReadUnsignedShort();
 				break;
 			}
 			case 2:
 			{
-				Name = stream.ReadString();
+				Name = buf.ReadString();
 				break;
 			}
 			case 4:
 			{
-				Zoom2D = stream.ReadUInt16();
+				Zoom2D = buf.ReadUnsignedShort();
 				break;
 			}
 			case 5:
@@ -66,12 +67,12 @@ class ItemDef : Definition
 			case 7:
 			case 8:
 			{
-				stream.ReadUInt16();
+				buf.ReadUnsignedShort();
 				break;
 			}
 			case 9:
 			{
-				stream.ReadString();
+				buf.ReadString();
 				break;
 			}
 			case 11:
@@ -81,7 +82,7 @@ class ItemDef : Definition
 			}
 			case 12:
 			{
-				Cost = stream.ReadInt32();
+				Cost = buf.ReadInt();
 				break;
 			}
 			case 16:
@@ -91,24 +92,24 @@ class ItemDef : Definition
 			}
 			case 23:
 			{
-				stream.ReadUInt16();
-				stream.ReadByte();
+				buf.ReadUnsignedShort();
+				buf.ReadByte();
 				break;
 			}
 			case 24:
 			{
-				stream.ReadUInt16();
+				buf.ReadUnsignedShort();
 				break;
 			}
 			case 25:
 			{
-				stream.ReadUInt16();
-				stream.ReadByte();
+				buf.ReadUnsignedShort();
+				buf.ReadByte();
 				break;
 			}
 			case 26:
 			{
-				stream.ReadUInt16();
+				buf.ReadUnsignedShort();
 				break;
 			}
 			case 30:
@@ -117,7 +118,7 @@ class ItemDef : Definition
 			case 33:
 			case 34:
 			{
-				string read = stream.ReadString();
+				string read = buf.ReadString();
 				if (read.Equals("null") || read.Equals("hidden")) {
 					GroundMenu[opcode - 30] = null;
 					break;
@@ -131,23 +132,23 @@ class ItemDef : Definition
 			case 38:
 			case 39:
 			{
-				InventoryMenu[opcode - 35] = stream.ReadString();
+				InventoryMenu[opcode - 35] = buf.ReadString();
 				break;
 			}
 			case 40:
 			case 41:
 			{
-				int count = stream.ReadByte();
+				int count = buf.ReadByte();
 				for (int i=0; i<count; i++)
 				{
-					stream.ReadUInt16();
-					stream.ReadUInt16();
+					buf.ReadUnsignedShort();
+					buf.ReadUnsignedShort();
 				}
 				break;
 			}
 			case 42:
 			{
-				stream.ReadByte();
+				buf.ReadByte();
 				break;
 			}
 			case 65:
@@ -162,27 +163,27 @@ class ItemDef : Definition
 			case 92:
 			case 93:
 			{
-				stream.ReadUInt16();
+				buf.ReadUnsignedShort();
 				break;
 			}
 			case 94:
 			{
-				Category = stream.ReadUInt16();
+				Category = buf.ReadUnsignedShort();
 				break;
 			}
 			case 95:
 			{
-				stream.ReadUInt16();
+				buf.ReadUnsignedShort();
 				break;
 			}
 			case 97:
 			{
-				NoteLinkId = stream.ReadUInt16();
+				NoteLinkId = buf.ReadUnsignedShort();
 				break;
 			}
 			case 98:
 			{
-				NoteTemplateId = stream.ReadUInt16();
+				NoteTemplateId = buf.ReadUnsignedShort();
 				break;
 			}
 			case 100:
@@ -196,47 +197,47 @@ class ItemDef : Definition
 			case 108:
 			case 109:
 			{
-				stream.ReadUInt16();
-				stream.ReadUInt16();
+				buf.ReadUnsignedShort();
+				buf.ReadUnsignedShort();
 				break;
 			}
 			case 110:
 			case 111:
 			case 112:
 			{
-				stream.ReadUInt16();
+				buf.ReadUnsignedShort();
 				break;
 			}
 			case 113:
 			case 114:
 			{
-				stream.ReadByte();
+				buf.ReadByte();
 				break;
 			}
 			case 115:
 			{
-				TeamCape = stream.ReadByte();
+				TeamCape = buf.ReadByte();
 				break;
 			}
 			case 139:
 			case 140:
 			{
-				stream.ReadUInt16();
+				buf.ReadUnsignedShort();
 				break;
 			}
 			case 148:
 			{
-				PlaceholderLink = stream.ReadUInt16();
+				PlaceholderLink = buf.ReadUnsignedShort();
 				break;
 			}
 			case 149:
 			{
-				PlaceholderTemplate = stream.ReadUInt16();
+				PlaceholderTemplate = buf.ReadUnsignedShort();
 				break;
 			}
 			case 249:
 			{
-				Params.Merge<int, object>(ReadParams(buffer));
+				Params.Merge<int, object>(ReadParams(buf));
 				
 				for (int i=0; i<8; i++)
 				{

@@ -1,6 +1,8 @@
 using System.Numerics;
 using DotNetty.Buffers;
 using DotNetty.Transport.Channels;
+using Netty;
+using Util.IO;
 
 namespace Net.Codec.Login;
 
@@ -26,8 +28,6 @@ class LoginDecoder : StatefulFrameDecoder<LoginDecoderState>
 	private int PayloadLength = -1;
 	private bool Reconnecting = false;
 	
-	private long BufferPosition = 0;
-	
 	public LoginDecoder(int serverRevision, int[] cacheCrcs, long serverSeed,
 						BigInteger? rsaExponent, BigInteger? rsaModulus)
 			: base(LoginDecoderState.HANDSHAKE)
@@ -41,52 +41,115 @@ class LoginDecoder : StatefulFrameDecoder<LoginDecoderState>
 	
 	private void DecodeHandshake(IChannelHandlerContext ctx, IByteBuffer buf)
 	{
-		BinaryReader stream = new BinaryReader(buf);
-		if (buf.Length > 0) {
-			int opcode = stream.ReadByte();
-			if (opcode == LOGIN_OPCODE || opcode == RECONNECT_OPCODE) {
-				Reconnecting = opcode == RECONNECT_OPCODE;
-				SetState(LoginDecoderState.HEADER);
-			} else {
-				ctx.WriteResponse(LoginResultType.BAD_SESSION_ID);
-			}
+		if (!buf.IsReadable())
+			return;
+		int opcode = buf.ReadByte();
+		if (opcode == LOGIN_OPCODE || opcode == RECONNECT_OPCODE) {
+			Reconnecting = opcode == RECONNECT_OPCODE;
+			SetState(LoginDecoderState.HEADER);
+		} else {
+			IByteBuffer temp = ctx.Channel.Allocator.Buffer(1);
+			temp.WriteByte((int) LoginResultType.BAD_SESSION_ID);
+			ctx.WriteAndFlushAsync(temp).AddListener(ChannelFutureListener.CLOSE);
 		}
 	}
 	
 	private void DecodePayload(IChannelHandlerContext ctx, IByteBuffer buf, List<object> output)
 	{
-		if (buf.Length >= PayloadLength) {
-			BufferPosition = buf.Position;
+		if (buf.ReadableBytes < PayloadLength)
+			return;
+		buf.MarkReaderIndex();
+		
+		IByteBuffer secureBuf;
+		if (RSAExponent != null && RSAModulus != null) {
+			ushort secureBufLength = buf.ReadUnsignedShort();
+			IByteBuffer secure = buf.ReadBytes(secureBufLength);
+			BigInteger rsaValue = BigInteger.ModPow(new BigInteger(secure.Array), (BigInteger) RSAExponent, (BigInteger) RSAModulus);
+			secureBuf = Unpooled.WrappedBuffer(rsaValue.ToByteArray());
+		} else {
+			secureBuf = buf;
+		}
+		
+		bool successfulEncryption = secureBuf.ReadByte() == 1;
+		if (!successfulEncryption) {
+			buf.ResetReaderIndex();
+			buf.SkipBytes(PayloadLength);
+			IByteBuffer temp = ctx.Channel.Allocator.Buffer(1);
+			temp.WriteByte((int) LoginResultType.BAD_SESSION_ID);
+			ctx.WriteAndFlushAsync(temp).AddListener(ChannelFutureListener.CLOSE);
+			return;
+		}
+		
+		int[] xteaKeys = new int[4] {
+			secureBuf.ReadInt(),
+			secureBuf.ReadInt(),
+			secureBuf.ReadInt(),
+			secureBuf.ReadInt()
+		}
+		long reportedSeed = secureBuf.ReadLong();
+		
+		int authCode = -1;
+		string? password = null;
+		int[] previousXteaKeys = new int[4];
+		
+		if (Reconnecting) {
+			for (int i=0; i<previousXteaKeys.Length; i++) {
+				previousXteaKeys[i] = secureBuf.ReadInt();
+			}
+			password = null;
+		} else {
+			switch (secureBuf.ReadByte()) {
+				case 0:
+				case 1:
+					authCode = secureBuf.ReadUnsignedMedium();
+					secureBuf.SkipBytes(1);
+					break;
+				case 2:
+					secureBuf.SkipBytes(4);
+					break;
+				case 3:
+					authCode = secureBuf.ReadInt();
+					break;
+			}
+			secureBuf.SkipBytes(1);
+			password = secureBuf.ReadString();
 			
+			IByteBuffer xteaBuf = buf.Decipher(xteaKeys);
+			string username = xteaBuf.ReadString();
 			
+			if (reportedSeed != ServerSeed) {
+				xteaBuf
+			}
 		}
 	}
 	
 	private void DecodeHeader(IChannelHandlerContext ctx, IByteBuffer buf, List<object> output)
 	{
-		BinaryReader stream = new BinaryReader(buf);
-		if (buf.Length >= 3) {
-			int size = stream.ReadUInt16();
-			if (buf.Length >= size) {
-				int revision = stream.ReadInt32();
-				stream.ReadInt32();
-				stream.ReadByte();
-				stream.ReadByte();
-				if (revision == ServerRevision) {
-					PayloadLength = size - (4 * 4);
-					DecodePayload(ctx, buf, output);
-				} else {
-					ctx.WriteResponse(LoginResultType.REVISION_MISMATCH);
-				}
+		if (buf.ReadableBytes >= 3)
+			return;
+		
+		int size = buf.ReadUnsignedShort();
+		if (buf.ReadableBytes >= size) {
+			int revision = buf.ReadInt();
+			buf.SkipBytes(4);
+			buf.SkipBytes(1);
+			buf.ReadByte();
+			if (revision == ServerRevision) {
+				PayloadLength = size - 16;
+				DecodePayload(ctx, buf, output);
 			} else {
-				buf.Seek(BufferPosition, SeekOrigin.Begin);
+				IByteBuffer temp = ctx.Channel.Allocator.Buffer(1);
+				temp.WriteByte((int) LoginResultType.REVISION_MISMATCH);
+				ctx.WriteAndFlushAsync(buf).AddListener(ChannelFutureListener.CLOSE);
 			}
+		} else {
+			buf.ResetReaderIndex();
 		}
 	}
 	
 	public override void Decode(IChannelHandlerContext ctx, IByteBuffer buf, List<object> output, LoginDecoderState state)
 	{
-		BufferPosition = buf.Position;
+		buf.MarkReaderIndex();
 		switch (state)
 		{
 			case LoginDecoderState.HANDSHAKE:

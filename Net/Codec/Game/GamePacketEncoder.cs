@@ -38,11 +38,12 @@ class GamePacketEncoder : MessageToByteEncoder<GamePacket>
 		if (msg.Opcode == 63) {
 			for (int i=0; i<msg.Length; i++)
 			{
-				output.WriteByte((byte) (msg.Payload[i] + (Random != null ? Random.NextInt() : 0) & 0xFF));
+				output.WriteByte((byte) (msg.Payload.GetByte(i) + (Random != null ? Random.NextInt() : 0) & 0xFF));
 			}
 		} else {
-			output.Write(msg.Payload, 0, msg.Payload.Length);
+			output.WriteBytes(msg.Payload);
 		}
+		msg.Payload.Release();
 	}
 	
 }

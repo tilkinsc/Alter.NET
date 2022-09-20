@@ -1,7 +1,7 @@
 using DotNetty.Buffers;
 using DotNetty.Transport.Channels;
 using Net.Codec.Login;
-using Util;
+using Netty;
 
 namespace Net.Codec.Filestore;
 
@@ -16,8 +16,6 @@ class FilestoreDecoder : StatefulFrameDecoder<FilestoreDecoderState>
 	
 	private int ServerRevision;
 	
-	private long BufferPosition = 0;
-	
 	public FilestoreDecoder(int serverRevision)
 			: base(FilestoreDecoderState.REVISION_REQUEST)
 	{
@@ -26,43 +24,41 @@ class FilestoreDecoder : StatefulFrameDecoder<FilestoreDecoderState>
 	
 	private void DecodeRevisionRequest(IChannelHandlerContext ctx, IByteBuffer buf)
 	{
-		BinaryReader stream = new BinaryReader(buf);
-		if (stream.GetRemaining() >= 4) {
-			int revision = stream.ReadInt32();
+		if (buf.ReadableBytes >= 4) {
+			int revision = buf.ReadInt();
 			if (revision != ServerRevision) {
-				ctx.WriteAndFlush(LoginResultType.REVISION_MISMATCH).AddListener(ChannelFutureListener.CLOSE);
+				ctx.WriteAndFlushAsync(LoginResultType.REVISION_MISMATCH).ContinueWith(ChannelFutureListener.CLOSE.OperationComplete!, null);
 			} else {
 				SetState(FilestoreDecoderState.ARCHIVE_REQUEST);
-				ctx.WriteAndFlush(LoginResultType.ACCEPTABLE);
+				ctx.WriteAndFlushAsync(LoginResultType.ACCEPTABLE);
 			}
 		}
 	}
 	
 	private void DecodeArchiveRequest(IByteBuffer buf, List<object> output)
 	{
-		BinaryReader stream = new BinaryReader(buf);
-		if (!stream.IsReadable())
+		if (!buf.IsReadable())
 			return;
 		
-		BufferPosition = buf.Position;
-		int opcode = stream.ReadByte();
+		buf.MarkReaderIndex();
+		int opcode = buf.ReadByte();
 		switch (opcode)
 		{
 			case CLIENT_INIT_GAME:
 			case CLIENT_LOAD_SCREEN:
 			case CLIENT_INIT_OPCODE:
-				buf.Seek(3, SeekOrigin.Current);
+				buf.SkipBytes(3);
 				break;
 			case ARCHIVE_REQUEST_NEUTRAL:
 			case ARCHIVE_REQUEST_URGENT:
-				if (stream.GetRemaining() >= 3) {
-					int index = stream.ReadByte();
-					int archive = stream.ReadUInt16();
+				if (buf.ReadableBytes >= 3) {
+					int index = buf.ReadByte();
+					int archive = buf.ReadUnsignedShort();
 					
 					FilestoreRequest request = new FilestoreRequest(index, archive, opcode == ARCHIVE_REQUEST_URGENT);
 					output.Add(request);
 				} else {
-					buf.Position = BufferPosition;
+					buf.ResetReaderIndex();
 				}
 				break;
 		}

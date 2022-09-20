@@ -31,7 +31,6 @@ class RLIndexFile : IDisposable, IEquatable<RLIndexFile>
 	{
 		lock (_Lock)
 		{
-			// TODO: Not sure if begin
 			IDXFile.Seek(entry.ID * INDEX_ENTRY_LEN, SeekOrigin.Begin);
 			
 			Buffer[0] = (byte) (entry.Length >> 16);
@@ -49,7 +48,6 @@ class RLIndexFile : IDisposable, IEquatable<RLIndexFile>
 	public RLIndexEntry? Read(int id)
 	{
 		lock (_Lock) {
-			// Not sure if begin
 			IDXFile.Seek(id * INDEX_ENTRY_LEN, SeekOrigin.Begin);
 			
 			int i = IDXFile.Read(Buffer);

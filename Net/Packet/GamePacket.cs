@@ -1,3 +1,5 @@
+using DotNetty.Buffers;
+
 namespace Net.Packet;
 
 class GamePacket
@@ -5,11 +7,11 @@ class GamePacket
 	
 	public int Opcode;
 	public PacketType Type;
-	public byte[] Payload;
+	public IByteBuffer Payload;
 	
-	public int Length { get => Payload.Length; }
+	public int Length { get => Payload.ReadableBytes; }
 	
-	public GamePacket(int opcode, PacketType type, byte[] payload)
+	public GamePacket(int opcode, PacketType type, IByteBuffer payload)
 	{
 		Opcode = opcode;
 		Type = type;

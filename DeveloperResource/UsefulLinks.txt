@@ -4,4 +4,6 @@ if ((this.writerIndex - this.readerIndex) > 0)
 	return true;
 return false;
 
-
+ChannelInboundHandlerAdapter isn't a thing in DotNetty we are okay to just
+inherit ChannelHandlerAdapter or SimpleChannelInboundHandler directly
+https://github.com/Azure/DotNetty/pull/142

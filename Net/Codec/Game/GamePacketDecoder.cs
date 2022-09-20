@@ -2,7 +2,6 @@ using DotNetty.Buffers;
 using DotNetty.Transport.Channels;
 using Exceptions;
 using Net.Packet;
-using Util;
 using Util.IO;
 
 namespace Net.Codec.Game;
@@ -15,10 +14,10 @@ class GamePacketDecoder : StatefulFrameDecoder<GameDecoderState>
 	private PacketType Type = PacketType.FIXED;
 	private bool Ignore = false;
 	
-	private IsaacRandom Random;
+	private IsaacRandom? Random;
 	private IPacketMetadata PacketMetadata;
 	
-	public GamePacketDecoder(IsaacRandom random, IPacketMetadata packetMetadata)
+	public GamePacketDecoder(IsaacRandom? random, IPacketMetadata packetMetadata)
 			: base(GameDecoderState.OPCODE)
 	{
 		Random = random;
@@ -27,13 +26,13 @@ class GamePacketDecoder : StatefulFrameDecoder<GameDecoderState>
 	
 	private void DecodeOpcode(IChannelHandlerContext ctx, IByteBuffer buf, List<object> output)
 	{
-		BinaryReader stream = new BinaryReader(buf);
-		if (stream.IsReadable())
+		if (!buf.IsReadable())
 			return;
-		Opcode = stream.ReadByte() - (Random.NextInt()) & 0xFF;
+		
+		Opcode = buf.ReadByte() - (Random != null ? Random.NextInt() : 0) & 0xFF;
 		PacketType? packetType = PacketMetadata.GetType(Opcode);
 		if (packetType == null) {
-			buf.Seek(0, SeekOrigin.End);
+			buf.SkipBytes(buf.ReadableBytes);
 			return;
 		}
 		Type = (PacketType) packetType;
@@ -46,7 +45,7 @@ class GamePacketDecoder : StatefulFrameDecoder<GameDecoderState>
 				if (Length != 0) {
 					SetState(GameDecoderState.PAYLOAD);
 				} else if (!Ignore) {
-					output.Add(new GamePacket(Opcode, Type, new byte[0]));
+					output.Add(new GamePacket(Opcode, Type, Unpooled.Empty));
 				}
 				break;
 			case PacketType.VARIABLE_BYTE:
@@ -60,23 +59,22 @@ class GamePacketDecoder : StatefulFrameDecoder<GameDecoderState>
 	
 	private void DecodeLength(IByteBuffer buf, List<object> output)
 	{
-		BinaryReader stream = new BinaryReader(buf);
-		if (!stream.IsReadable())
+		if (!buf.IsReadable())
 			return;
-		Length = Type == PacketType.VARIABLE_SHORT ? stream.ReadUInt16() : stream.ReadByte();
+		
+		Length = Type == PacketType.VARIABLE_SHORT ? buf.ReadUnsignedShort() : buf.ReadByte();
 		if (Length != 0) {
 			SetState(GameDecoderState.PAYLOAD);
 		} else if (!Ignore) {
-			output.Add(new GamePacket(Opcode, Type, new byte[0]));
+			output.Add(new GamePacket(Opcode, Type, Unpooled.Empty));
 		}
 	}
 	
 	private void DecodePayload(IByteBuffer buf, List<object> output)
 	{
-		BinaryReader stream = new BinaryReader(buf);
-		if (!stream.IsReadable())
+		if (buf.ReadableBytes < Length)
 			return;
-		byte[] payload = stream.ReadBytes(Length);
+		IByteBuffer payload = buf.ReadBytes(Length);
 		SetState(GameDecoderState.OPCODE);
 		
 		if (!Ignore) {

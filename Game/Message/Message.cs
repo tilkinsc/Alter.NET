@@ -1,6 +1,6 @@
 namespace Game.Message;
 
-interface IMessage
+interface Message
 {
 	
 }

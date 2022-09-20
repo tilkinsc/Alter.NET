@@ -50,8 +50,50 @@ class LoginDecoder : StatefulFrameDecoder<LoginDecoderState>
 		} else {
 			IByteBuffer temp = ctx.Channel.Allocator.Buffer(1);
 			temp.WriteByte((int) LoginResultType.BAD_SESSION_ID);
-			ctx.WriteAndFlushAsync(temp).AddListener(ChannelFutureListener.CLOSE);
+			ctx.WriteAndFlushAsync(temp).ContinueWith(ChannelFutureListener.CLOSE.OperationComplete, null);
 		}
+	}
+	
+	private int[] DecodeCRCs(IByteBuffer xteaBuf)
+	{
+		int[] crcs = new int[CacheCrcs.Length];
+		for (int i=0; i<CRCORDER.Length; i++)
+		{
+			int idx = CRCORDER[i];
+			switch (idx)
+			{
+				case 7:
+				case 2:
+					crcs[idx] = xteaBuf.ReadIntIME();
+					break;
+				case 14:
+				case 17:
+				case 8:
+				case 19:
+				case 4:
+				case 3:
+					crcs[idx] = xteaBuf.ReadIntIME();
+					break;
+				case 6:
+				case 20:
+				case 18:
+				case 16:
+				case 12:
+				case 9:
+				case 10:
+					crcs[idx] = xteaBuf.ReadIntLE();
+					break;
+				case 15:
+				case 1:
+				case 0:
+				case 5:
+				case 13:
+				case 11:
+					crcs[idx] = xteaBuf.ReadInt();
+					break;
+			}
+		}
+		return crcs;
 	}
 	
 	private void DecodePayload(IChannelHandlerContext ctx, IByteBuffer buf, List<object> output)
@@ -76,7 +118,7 @@ class LoginDecoder : StatefulFrameDecoder<LoginDecoderState>
 			buf.SkipBytes(PayloadLength);
 			IByteBuffer temp = ctx.Channel.Allocator.Buffer(1);
 			temp.WriteByte((int) LoginResultType.BAD_SESSION_ID);
-			ctx.WriteAndFlushAsync(temp).AddListener(ChannelFutureListener.CLOSE);
+			ctx.WriteAndFlushAsync(temp).ContinueWith(ChannelFutureListener.CLOSE.OperationComplete, null);
 			return;
 		}
 		
@@ -85,7 +127,7 @@ class LoginDecoder : StatefulFrameDecoder<LoginDecoderState>
 			secureBuf.ReadInt(),
 			secureBuf.ReadInt(),
 			secureBuf.ReadInt()
-		}
+		};
 		long reportedSeed = secureBuf.ReadLong();
 		
 		int authCode = -1;
@@ -114,12 +156,50 @@ class LoginDecoder : StatefulFrameDecoder<LoginDecoderState>
 			secureBuf.SkipBytes(1);
 			password = secureBuf.ReadString();
 			
-			IByteBuffer xteaBuf = buf.Decipher(xteaKeys);
+			byte[] data = new byte[xteaKeys.Length];
+			secureBuf.ReadBytes(data);
+			IByteBuffer xteaBuf = Unpooled.WrappedBuffer(Xtea.Decipher(xteaKeys, data, 0, data.Length));
 			string username = xteaBuf.ReadString();
 			
 			if (reportedSeed != ServerSeed) {
-				xteaBuf
+				xteaBuf.ResetReaderIndex();
+				xteaBuf.SkipBytes(PayloadLength);
+				IByteBuffer temp = ctx.Channel.Allocator.Buffer(1);
+				temp.WriteByte((int) LoginResultType.BAD_SESSION_ID);
+				ctx.WriteAndFlushAsync(temp).ContinueWith(ChannelFutureListener.CLOSE.OperationComplete, null);
+				return;
 			}
+			
+			int clientSettings = xteaBuf.ReadByte();
+			bool clientResizable = (clientSettings >> 1) == 1;
+			int clientWidth = xteaBuf.ReadUnsignedShort();
+			int clientHeight = xteaBuf.ReadUnsignedShort();
+			
+			xteaBuf.SkipBytes(24);
+			xteaBuf.ReadString();
+			xteaBuf.SkipBytes(4);
+			xteaBuf.SkipBytes(10);
+			xteaBuf.SkipBytes(2);
+			xteaBuf.SkipBytes(1);
+			xteaBuf.SkipBytes(3);
+			xteaBuf.SkipBytes(2);
+			xteaBuf.ReadJagexString();
+			xteaBuf.ReadJagexString();
+			xteaBuf.ReadJagexString();
+			xteaBuf.ReadJagexString();
+			xteaBuf.SkipBytes(1);
+			xteaBuf.SkipBytes(2);
+			xteaBuf.ReadJagexString();
+			xteaBuf.ReadJagexString();
+			xteaBuf.SkipBytes(2);
+			xteaBuf.SkipBytes(12);
+			xteaBuf.SkipBytes(4);
+			xteaBuf.ReadJagexString();
+			xteaBuf.SkipBytes(12);
+			
+			int[] crcs = DecodeCRCs(xteaBuf);
+			LoginRequest request = new LoginRequest(ctx.Channel, username, password ?? "", ServerRevision, xteaKeys, clientResizable, authCode, "".ToUpper(), clientWidth, clientHeight, Reconnecting);
+			output.Add(request);
 		}
 	}
 	
@@ -140,7 +220,7 @@ class LoginDecoder : StatefulFrameDecoder<LoginDecoderState>
 			} else {
 				IByteBuffer temp = ctx.Channel.Allocator.Buffer(1);
 				temp.WriteByte((int) LoginResultType.REVISION_MISMATCH);
-				ctx.WriteAndFlushAsync(buf).AddListener(ChannelFutureListener.CLOSE);
+				ctx.WriteAndFlushAsync(buf).ContinueWith(ChannelFutureListener.CLOSE.OperationComplete, null);
 			}
 		} else {
 			buf.ResetReaderIndex();

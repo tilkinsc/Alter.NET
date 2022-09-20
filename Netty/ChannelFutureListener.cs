@@ -7,7 +7,7 @@ class ChannelFutureListener : GenericFutureListener<ChannelFuture>
 	
 	public static ChannelFutureListener CLOSE = new ChannelFutureListener()
 	{
-		OperationComplete = (object? a, EventArgs b) => {
+		OperationComplete = (Task a, object? b) => {
 			if (a == null)
 				return;
 			if (a is not ChannelFuture)

@@ -1,3 +1,4 @@
+using ICSharpCode.SharpZipLib.BZip2;
 
 namespace Cache.Util;
 
@@ -16,7 +17,7 @@ class RLBZip2
 		MemoryStream input = new MemoryStream(bytes);
 		MemoryStream output = new MemoryStream();
 		
-		ICSharpCode.SharpZipLib.BZip2.BZip2.Compress(input, output, false, 9);
+		BZip2.Compress(input, output, false, 9);
 		
 		return output.ToArray().Skip(BZIP_HEADER.Length).ToArray();
 	}
@@ -29,7 +30,7 @@ class RLBZip2
 		
 		MemoryStream output = new MemoryStream();
 		
-		ICSharpCode.SharpZipLib.BZip2.BZip2.Decompress(input, output, false);
+		BZip2.Decompress(input, output, false);
 		
 		return output.ToArray();
 	}

@@ -1,8 +1,45 @@
 using Exceptions;
-using Util;
 
 namespace Cache.Index;
 
+
+static class BinaryReaderExtensions
+{
+
+	public static int ReadBigSmart(this BinaryReader stream)
+	{
+		return stream.PeekChar() >= 0
+			? (stream.ReadUInt16() & 0xFFFF)
+			: (stream.ReadInt32() & int.MaxValue);
+	}
+	
+	public static int ReadBigSmart2(this BinaryReader stream)
+	{
+		if (stream.PeekChar() < 0) {
+			return stream.ReadInt32() & int.MaxValue;
+		}
+		int value = stream.ReadUInt16();
+		return value == 32767 ? -1 : value;
+	}
+
+}
+
+static class BinaryWriterExtensions
+{
+
+	public static void WriteBigSmart(this BinaryWriter stream, int value)
+	{
+		if (value < 0)
+			throw new IllegalArgumentException();
+
+		if (value < 128) {
+			stream.Write((byte) value);
+		} else {
+			stream.Write((short) (0x8000 | (short) value));
+		}
+	}
+
+}
 
 class RLIndexData
 {

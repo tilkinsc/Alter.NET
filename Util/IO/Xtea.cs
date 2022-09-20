@@ -1,13 +1,13 @@
 namespace Util.IO;
 
-class Xtea
+static class Xtea
 {
 	
 	private const int GOLDEN_RATIO = -1640531527;
 	
 	private const int ROUNDS = 32;
 	
-	public byte[] Decipher(int[] key, byte[] data, int start, int end)
+	public static byte[] Decipher(int[] key, byte[] data, int start, int end)
 	{
 		int numBlocks = (end - start) / 8;
 		

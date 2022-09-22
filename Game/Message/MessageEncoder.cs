@@ -2,7 +2,7 @@ using Util;
 
 namespace Game.Message;
 
-abstract class MessageEncoder<T> where T : Message
+abstract class MessageEncoder<T> where T : IMessage
 {
 	
 	public void Encode(T message, GamePacketBuilder builder, MessageStructure structure)

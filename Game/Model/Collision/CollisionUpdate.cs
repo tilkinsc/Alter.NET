@@ -87,7 +87,7 @@ class CollisionUpdate
 		
 		public void PutObject(DefinitionSet definitions, GameObject obj)
 		{
-			ObjectDef? def = definitions.Get<ObjectDef>(typeof(ObjectDef), obj.ID);
+			ObjectDef? def = definitions.Get<ObjectDef>(obj.ID);
 			if (def == null)
 				throw new IllegalStateException("Definitions not loaded before using them");
 			

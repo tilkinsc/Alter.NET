@@ -25,7 +25,7 @@ abstract class EntityUpdate<T> : EntityUpdate where T : BaseEntity
 		Entity = entity;
 	}
 	
-	public abstract Message.Message ToMessage();
+	public abstract Message.IMessage ToMessage();
 	
 	public override string ToString()
 	{

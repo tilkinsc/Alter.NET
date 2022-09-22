@@ -150,7 +150,6 @@ class CollisionManager
 		ApplyUpdate(builder.Build());
 	}
 	
-	// TODO: fill this out
 	public void ApplyUpdate(CollisionUpdate update)
 	{
 		CollisionType type = update.Type;

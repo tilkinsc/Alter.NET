@@ -1,6 +1,6 @@
 namespace Game.Message;
 
-interface MessageHandler<T> where T : Message
+interface MessageHandler<T> where T : IMessage
 {
 	
 	public void Handle(Client client, World world, T message);

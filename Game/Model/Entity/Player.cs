@@ -32,7 +32,7 @@ class Player : Pawn
 	public int[] GPIInactivityFlags = new int[2048];
 	public int[] GPITileHashMultipliers = new int[2048];
 	public List<Npc> LocalNPCs = new List<Npc>();
-	public Appearance Appearance = Appearance.DEFAULT_MALE;
+	public Appearance.Appearance Appearance = Appearance.DEFAULT_MALE;
 	public int[] Animations = new int[] { 808, 823, 819, 820, 821, 822, 824 };
 	public double Weight;
 	public int SkillIcon = -1;

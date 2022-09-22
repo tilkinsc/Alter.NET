@@ -11,4 +11,19 @@ abstract class BaseEntity
 	public Tile? Tile;
 	public EntityType EntityType;
 	
+	public BaseEntity(Tile tile, EntityType entityType)
+	{
+		Tile = tile;
+		EntityType = entityType;
+	}
+	
+	public BaseEntity(Tile tile)
+			: this (tile, EntityType.NONE)
+	{
+	}
+	
+	public BaseEntity()
+	{
+	}
+	
 }

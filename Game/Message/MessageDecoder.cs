@@ -3,7 +3,7 @@ using Net.Packet;
 
 namespace Game.Message;
 
-abstract class MessageDecoder<T> where T : Message
+abstract class MessageDecoder<T> where T : IMessage
 {
 	
 	public virtual T Decode(int opcode, MessageStructure structure, GamePacketReader reader)

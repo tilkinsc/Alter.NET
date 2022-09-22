@@ -2,6 +2,7 @@ namespace Game.Model;
 
 enum EntityType
 {
+	NONE = -1,
 	PLAYER = 0,
 	CLIENT,
 	NPC,

@@ -18,6 +18,7 @@ class GameObject : BaseEntity
 	public int Rotation { get => Settings & 0x3; }
 	
 	private GameObject(int id, int settings, Tile tile)
+			: base(tile)
 	{
 		ID = id;
 		Settings = (byte) settings;

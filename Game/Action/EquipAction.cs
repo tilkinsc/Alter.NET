@@ -5,7 +5,8 @@ namespace Game.Action;
 class EquipAction
 {
 	
-	private static string[] abc = new string[] {
+	private static string[] SKILL_NAMES =
+	{
 		"attack", "defence", "strength", "hitpoints", "ranged", "prayer",
 		"magic", "cooking", "woodcutting", "fletching", "fishing", "firemaking",
 		"crafting", "Smithing", "mining", "herblore", "agility", "thieving",
@@ -22,7 +23,7 @@ class EquipAction
 		INVALID_ITEM
 	}
 	
-	public Result Equip(Player p, Item item, int inventorySlot = -1)
+	public static Result Equip(Player p, Item item, int invetorySlot = -1)
 	{
 		
 	}

@@ -14,6 +14,11 @@ abstract class AttributeKey : IEquatable<AttributeKey>
 		Temporary = temp;
 	}
 	
+	/// <summary>
+	/// This is a lengthy description that tells you that this compares two things that may or may not be equal to each other.
+	/// </summary>
+	/// <param name="obj">The object you want to equate can be null.</param>
+	/// <returns>A boolean</returns>
 	public sealed override bool Equals(object? obj)
 	{
 		return Equals(obj as AttributeKey);

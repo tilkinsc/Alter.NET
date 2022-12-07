@@ -1,10 +1,13 @@
+using Game.FS.Def;
+using Game.Model;
+
 namespace Game.FS;
 
 class EnumDefinitions
 {
 	
 	public int EnumID;
-	public Dictionary<int, object?> Values = new Dictionary<int, object?>();
+	public Dictionary<int, object> Values = new Dictionary<int, object>();
 	
 	private World World;
 	
@@ -16,7 +19,7 @@ class EnumDefinitions
 	
 	public EnumDefinitions? Get()
 	{
-		var? _struct = World.Definitions.GetNullable(typeof(EnumDef), EnumID);
+		EnumDef? _struct = World.Definitions.Get<EnumDef>(EnumID);
 		if (_struct != null) {
 			Values = _struct.Values;
 		}
@@ -25,18 +28,20 @@ class EnumDefinitions
 	
 	public string? GetValueAsString(int param)
 	{
-		return (string?) Values.GetValueOrDefault(param, null);
+		return (string?) Values.GetValueOrDefault(param);
 	}
 	
 	public int? GetValueAsInt(int param)
 	{
-		return (int?) Values.GetValueOrDefault(param, null);
+		return (int?) Values.GetValueOrDefault(param);
 	}
 	
-	// TODO: I dont know if this works
 	public bool GetValueAsBool(int param)
 	{
-		return GetValueAsString(param) == "yes";
+		if ((string?) Values.GetValueOrDefault(param, "no") == "yes") {
+			return true;
+		}
+		return false;
 	}
 	
 }

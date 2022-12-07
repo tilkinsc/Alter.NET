@@ -10,9 +10,9 @@ class LoginSystem : ServerSystem
 	private LoginService? LoginService;
 	
 	private World World;
-	private IChannel Channel;
 	
 	public LoginSystem(IChannel channel, World world)
+			: base(channel)
 	{
 		Channel = channel;
 		World = world;

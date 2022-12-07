@@ -1,3 +1,6 @@
+using Game.Model;
+using Game.Model.Entity;
+
 namespace Game.Message;
 
 interface MessageHandler<T> where T : IMessage

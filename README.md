@@ -1,5 +1,5 @@
 # Alter.NET
-A C# flavored variant of Atler
+A C# flavored variant of Alter
 
 Work in progress. Not functional.
 

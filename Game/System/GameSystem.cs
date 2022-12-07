@@ -1,12 +1,12 @@
 using DotNetty.Transport.Channels;
 using Game.Model;
+using Game.Model.Entity;
 
 namespace Game.System;
 
 class GameSystem : ServerSystem
 {
 	
-	public IChannel Channel;
 	public World World;
 	public Client Client;
 	public GameService Service;
@@ -16,7 +16,6 @@ class GameSystem : ServerSystem
 	public GameSystem(IChannel channel, World world, Client client, GameService service)
 			: base(channel)
 	{
-		Channel = channel;
 		World = world;
 		Client = client;
 		Service = service;

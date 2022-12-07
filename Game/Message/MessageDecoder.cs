@@ -10,8 +10,9 @@ abstract class MessageDecoder<T> where T : IMessage
 	{
 		Dictionary<string, Number> values = new Dictionary<string, Number>();
 		Dictionary<string, string> stringValues = new Dictionary<string, string>();
-		foreach (var? value in structure.Values)
+		foreach (KeyValuePair<string, MessageValue> msg in structure.Values)
 		{
+			MessageValue value = msg.Value;
 			if (value.Type == DataType.BYTES)
 				throw new Exception("Cannot decode message with type BYTES");
 			
@@ -33,9 +34,9 @@ abstract class MessageDecoder<T> where T : IMessage
 				values[value.ID] = reader.GetUnsigned(value.Type, value.Order, value.Transformation).ToNumber();
 			}
 		}
-		return Decode(opcode, structure.Opcodes.IndexOf(opcode), values, stringValues);
+		return Decode(opcode, Array.IndexOf(structure.Opcodes, opcode), values, stringValues);
 	}
 	
-	public abstract T Decode(int opcode, int opcodeIndex, Dictionary<string, ?> values, Dictionary<string, string> stringValues);
+	public abstract T Decode(int opcode, int opcodeIndex, Dictionary<string, Number> values, Dictionary<string, string> stringValues);
 	
 }

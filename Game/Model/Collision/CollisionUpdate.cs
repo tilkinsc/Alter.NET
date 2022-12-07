@@ -26,7 +26,7 @@ class CollisionUpdate
 	{
 		
 		private Dictionary<Tile, List<DirectionFlag>> Flags = new Dictionary<Tile, List<DirectionFlag>>();
-		private CollisionType? Type = null;
+		public CollisionType? Type = null;
 		
 		public CollisionUpdate Build()
 		{

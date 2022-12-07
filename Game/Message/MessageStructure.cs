@@ -1,3 +1,5 @@
+using Net.Packet;
+
 namespace Game.Message;
 
 class MessageStructure : IEquatable<MessageStructure>

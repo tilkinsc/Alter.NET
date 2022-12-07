@@ -1,11 +1,13 @@
 using Cache;
 using Cache.Definitions;
+using Cache.Definitions.Loaders;
 using Cache.FS;
 using Cache.Region;
 using DotNetty.Buffers;
 using Exceptions;
 using Game.FS.Def;
 using Game.Model;
+using Game.Model.Collision;
 using Game.Model.Region;
 using Game.Service.Xtea;
 using Util;
@@ -143,7 +145,7 @@ class DefinitionSet
 		if (mapData == null)
 			return false;
 		
-		RLMapDefinition mapDefinition = new MapLoader().Load(x, z, mapData);
+		RLMapDefinition mapDefinition = new RLMapLoader().Load(x, z, mapData);
 		
 		RLRegion cacheRegion = new RLRegion(id);
 		cacheRegion.LoadTerrain(mapDefinition);
@@ -157,7 +159,7 @@ class DefinitionSet
 				for (int lz=0; lz<64; lz++)
 				{
 					int tileSetting = cacheRegion.GetTileSetting(height, lx, lz);
-					Tile tile = new Tile(cacheRegion.baseX + lx, cacheRegion.BaseY + lz, height);
+					Tile tile = new Tile(cacheRegion.BaseX + lx, cacheRegion.BaseY + lz, height);
 					
 					if ((tileSetting & CollisionManager.BLOCKED_TILE) == CollisionManager.BLOCKED_TILE) {
 						blocked.Add(tile);
@@ -171,8 +173,8 @@ class DefinitionSet
 			}
 		}
 		
-		var? blockedTileBuilder = new CollisionUpdate.Bulder();
-		blockedTileBuilder.Type = CollisionUpdate.Type.ADD;
+		CollisionUpdate.Builder blockedTileBuilder = new CollisionUpdate.Builder();
+		blockedTileBuilder.Type = CollisionType.ADD;
 		foreach (Tile tile in blocked)
 		{
 			world.Chunks.GetOrCreate(tile).BlockedTiles.Add(tile);
@@ -184,13 +186,13 @@ class DefinitionSet
 			return true;
 		}
 		
-		var? keys = XTeaKeyService.Get(id);
+		int[] keys = XTeaKeyService.Get(id);
 		if (keys == null)
 			keys = XTeaKeyService.EMPTY_KEYS;
 		// try {
 			
-			var? landData = landArchive.Decompress(world.FileStore.Storage.LoadArchive(landArchive), keys);
-			RLLocationsDefinition locDef = new LocationsLoader().Load(x, z, landData);
+			byte[]? landData = landArchive.Decompress(world.FileStore.Storage.LoadArchive(landArchive), keys);
+			RLLocationsDefinition locDef = new RLLocationsLoader().Load(x, z, landData);
 			cacheRegion.LoadLocations(locDef);
 			
 			foreach (RLLocation loc in cacheRegion.Locations)

@@ -33,31 +33,31 @@ class Server
 		sw2.Start();
 		GameJSON.Instance.Load();
 		GameJSON gm = GameJSON.Instance.Handle;
-		GameContext gameContext = new GameContext {
-			InitialLaunch = gm.InitialLaunch,
-			Name = gm.Name,
-			Revision = gm.Revision,
-			CycleTime = gm.CycleTime,
-			PlayerLimit = gm.PlayerLimit,
-			Home = new Tile(gm.Home),
-			SkillCount = gm.SkillCount,
-			NPCStatCount = gm.NPCStatCount,
-			RunEnergy = gm.RunEnergy,
-			GroundItemPublicDelay = gm.GroundItemPublicDelay,
-			GroundItemDespawnDelay = gm.GroundItemDespawnDelay,
-			PreloadMaps = gm.PreloadMaps
-		};
+		GameContext gameContext = new GameContext(
+			gm.InitialLaunch,
+			gm.Name,
+			gm.Revision,
+			gm.CycleTime,
+			gm.PlayerLimit,
+			new Tile(gm.Home),
+			gm.SkillCount,
+			gm.NPCStatCount,
+			gm.RunEnergy,
+			gm.GroundItemPublicDelay,
+			gm.GroundItemDespawnDelay,
+			gm.PreloadMaps
+		);
 		
 		
 		DevSettingsJSON.Instance.Load();
 		DevSettingsJSON dv = DevSettingsJSON.Instance.Handle;
-		DevContext devContext = new DevContext {
-			DebugExamines = dv.DebugExamines,
-			DebugObjects = dv.DebugObjects,
-			DebugButtons = dv.DebugButtons,
-			DebugItemActions = dv.DebugItemActions,
-			DebugMagicSpells = dv.DebugMagicSpells
-		};
+		DevContext devContext = new DevContext (
+			dv.DebugExamines,
+			dv.DebugObjects,
+			dv.DebugButtons,
+			dv.DebugItemActions,
+			dv.DebugMagicSpells
+		);
 		
 		World world = new World(gameContext, devContext);
 		sw2.Stop();

@@ -11,10 +11,10 @@ class DataType
 	public static readonly DataType SMART = new DataType(-1);
 	public static readonly DataType STRING = new DataType(-1);
 	
-	public int Value;
+	public int Bytes;
 	
-	public DataType(int value)
+	public DataType(int bytes)
 	{
-		Value = value;
+		Bytes = bytes;
 	}
 }

@@ -409,7 +409,24 @@ class ItemContainer : IEnumerable<Item.Item?>
 	
 	public void Shift()
 	{
+		List<Item.Item?> newItems = new List<Item.Item?>(Capacity);
+		newItems.AddRange(Enumerable.Repeat((Item.Item?) null, _items.Capacity));
 		
+		int index = 0;
+		for (int i=0; i<Capacity; i++)
+		{
+			Item.Item? item = _items[i];
+			if (item == null)
+				continue;
+			newItems[index++] = item;
+		}
+		
+		RemoveAll();
+		
+		for (int i=0; i<Capacity; i++)
+		{
+			_items[i] = newItems[i];
+		}
 	}
 	
 	public IEnumerator<Item.Item?> GetEnumerator()

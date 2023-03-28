@@ -17,16 +17,6 @@ static class DictionaryExtensions
 		}
 	}
 	
-	// Returns if value was added at key inside of list
-	public static bool AddIfNotExist<TValue>(this List<TValue> list, TValue val)
-	{
-		if (!list.Contains(val)) {
-			list.Add(val);
-			return true;
-		}
-		return false;
-	}
-	
 	// Removes an element or does nothing if it doesn't exist
 	public static bool RemoveIfNotExist<TKey, TDataType>(this Dictionary<TKey, TDataType> dict, TKey key)
 	{

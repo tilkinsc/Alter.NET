@@ -3,7 +3,7 @@ using Game.Model;
 
 namespace Game.Service.Xtea;
 
-class XTeaKeyService : Service
+class XTeaKeyService : IService
 {
 	
 	public static readonly int[] EMPTY_KEYS = new int[] { 0, 0, 0, 0 };

@@ -8,6 +8,7 @@ using Exceptions;
 using Game.FS.Def;
 using Game.Model;
 using Game.Model.Collision;
+using Game.Model.Entity;
 using Game.Model.Region;
 using Game.Service.Xtea;
 using Util;
@@ -25,6 +26,7 @@ class DefinitionSet
 	public void LoadAll(RLStore store)
 	{
 		Load<AnimDef>(store, typeof(AnimDef));
+		Load<VarpDef>(store, typeof(VarpDef));
 		Load<VarBitDef>(store, typeof(VarBitDef));
 		Load<EnumDef>(store, typeof(EnumDef));
 		Load<StructDef>(store, typeof(StructDef));
@@ -66,7 +68,7 @@ class DefinitionSet
 		} else if (type == typeof(AnimDef)) {
 			configType = RLConfigType.SEQUENCE;
 		} else {
-			throw new IllegalArgumentException($"Unhandled class type {type.FullName}");
+			throw new IllegalArgumentException($"Unhandled Definition class type {type.FullName}");
 		}
 		RLIndex? configs = store.GetIndex(RLIndexType.CONFIGS);
 		if (configs == null) {
@@ -75,7 +77,7 @@ class DefinitionSet
 		RLArchive archive = configs.GetArchive(configType.GetID())!;
 		List<RLFSFile> files = archive.GetFiles(store.Storage.LoadArchive(archive)!).Files;
 		
-		Dictionary<int, T> definitions = new Dictionary<int, T>();
+		Dictionary<int, T> definitions = new Dictionary<int, T>(files.Count + 1);
 		for (int i=0; i<files.Count; i++)
 		{
 			definitions[files[i].FileID] = CreateDefinition<T>(type, files[i].FileID, files[i].Contents!);
@@ -103,7 +105,7 @@ class DefinitionSet
 		} else if (type == typeof(AnimDef)) {
 			def = new AnimDef(id);
 		} else {
-			throw new IllegalArgumentException($"Unhandled class type {type.FullName}");
+			throw new IllegalArgumentException($"Unhandled Definition class type {type.FullName}");
 		}
 		
 		IByteBuffer buf = Unpooled.WrappedBuffer(data);
@@ -125,7 +127,7 @@ class DefinitionSet
 	public bool CreateRegion(World world, int id)
 	{
 		if (XTeaKeyService == null) {
-			XTeaKeyService = world.GetService(typeof(XTeaKeyService));
+			XTeaKeyService = world.GetService<XTeaKeyService>(typeof(XTeaKeyService));
 		}
 		
 		RLIndex? regionIndex = world.FileStore.GetIndex(RLIndexType.MAPS);
@@ -189,8 +191,7 @@ class DefinitionSet
 		int[] keys = XTeaKeyService.Get(id);
 		if (keys == null)
 			keys = XTeaKeyService.EMPTY_KEYS;
-		// try {
-			
+		try {
 			byte[]? landData = landArchive.Decompress(world.FileStore.Storage.LoadArchive(landArchive), keys);
 			RLLocationsDefinition locDef = new RLLocationsLoader().Load(x, z, landData);
 			cacheRegion.LoadLocations(locDef);
@@ -199,16 +200,16 @@ class DefinitionSet
 			{
 				Tile tile = new Tile(loc.Position.X, loc.Position.Y, loc.Position.Z);
 				if (bridges.Contains(tile.Transform(1))) {
-					return@forEach
+					continue;
 				}
 				StaticObject obj = new StaticObject(loc.ID, loc.Type, loc.Orientation, bridges.Contains(tile) ? tile.Transform(-1) : tile);
 				world.Chunks.GetOrCreate(tile).AddEntity(world, obj, obj.Tile);
 			}
 			return true;
-		// } catch (IOException e) {
+		} catch (IOException e) {
 			
-		// 	return false;
-		// }
+			return false;
+		}
 		
 	}
 	

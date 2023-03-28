@@ -35,7 +35,7 @@ class ChunkSet
 	public int GetActiveChunkCount() => Chunks.Count;
 	public int GetActiveRegionCount() => ActiveRegions.Count;
 	
-	public Chunk GetOrCreateChunk(Tile tile)
+	public Chunk GetOrCreate(Tile tile)
 	{
 		return Get(tile.ChunkCoords, true)!;
 	}

@@ -6,7 +6,10 @@ Work in progress. Not functional.
 https://github.com/tilkinsc/Alter.NET
 https://github.com/AlterRSPS/Alter
 
-## Finished
+## Finished Packages
+* Game.Event
+* Game.FS
+* Game.FS.Def
 
 ## Mostly Done
 * Runelite Cache

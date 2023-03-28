@@ -1,3 +1,4 @@
+using Game.FS.Def;
 using Game.Model.Entity;
 
 namespace Game.Action;
@@ -24,6 +25,12 @@ class EquipAction
 	}
 	
 	public static Result Equip(Player p, Item item, int invetorySlot = -1)
+	{
+		ItemDef def = p.World.Definitions.Get<ItemDef>(typeof(ItemDef), item.id);
+		
+	}
+	
+	public static Result Unequip(Player p, int equipmentSlot)
 	{
 		
 	}

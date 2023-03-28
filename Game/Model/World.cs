@@ -6,6 +6,7 @@ using Game.Model.Collision;
 using Game.Model.Entity;
 using Game.Model.Region;
 using Game.Model.Timer;
+using Game.Service;
 using Game.Service.Xtea;
 using Game.Sync.Block;
 
@@ -18,20 +19,20 @@ class World
 	public DevContext DevContext;
 	public RLStore FileStore;
 	public DefinitionSet Definitions;
-	public List<Service> Services;
-	public CoroutineDispatcher CoroutineDispatcher;
-	public QueueTaskSet Queues;
+	public List<IService> Services;
+	// public CoroutineDispatcher CoroutineDispatcher;
+	// public QueueTaskSet Queues;
 	public PawnList<Player> Players;
 	public PawnList<Npc> Npcs;
 	public ChunkSet Chunks;
 	public CollisionManager Collision;
-	public InstancedMapAllocator InstanceAllocator;
-	public PluginRepository Plugins;
-	public PrivilegeSet Privileges;
+	// public InstancedMapAllocator InstanceAllocator;
+	// public PluginRepository Plugins;
+	// public PrivilegeSet Privileges;
 	public XTeaKeyService? XTeaKeyService;
 	public UpdateBlockSet PlayerUpdateBlocks;
 	public UpdateBlockSet NpcUpdateBlocks;
-	public SecureRandom Random;
+	// public SecureRandom Random;
 	public TimerMap Timers;
 	public AttributeMap Attributes;
 	public List<GroundItem> GroundItems;
@@ -44,16 +45,16 @@ class World
 	{
 		GameContext = gameContext;
 		DevContext = devContext;
-		Queues = new WorldQueueTaskSet();
+		// Queues = new WorldQueueTaskSet();
 		Players = new PawnList(new int[gameContext.PlayerLimit]);
 		Npcs = new PawnList(new Npc[UInt16.MaxValue]);
 		Collision = new CollisionManager(Chunks);
-		InstanceAllocator = new InstancedMapAllocator();
-		Plugins = new PluginRepository(this);
-		Privileges = new PrivilegeSet();
+		// InstanceAllocator = new InstancedMapAllocator();
+		// Plugins = new PluginRepository(this);
+		// Privileges = new PrivilegeSet();
 		PlayerUpdateBlocks = new UpdateBlockSet();
 		NpcUpdateBlocks = new UpdateBlockSet();
-		Random = new SecureRandom();
+		// Random = new SecureRandom();
 		Timers = new TimerMap();
 		Attributes = new AttributeMap();
 		GroundItems = new List<GroundItem>();
@@ -61,12 +62,12 @@ class World
 	}
 	
 	
-	val huffman by lazy {
-		val binary = filestore.getIndex(IndexType.BINARY)!!
-		val archive = binary.FindArchiveByName("huffman")!!
-		val file = archive.getFiles(filestore.storage.loadArchive(archive)!!).files[0]
-		HuffmanCodec(file.contents)
-	}
+	// val huffman by lazy {
+	// 	val binary = filestore.getIndex(IndexType.BINARY)!!
+	// 	val archive = binary.FindArchiveByName("huffman")!!
+	// 	val file = archive.getFiles(filestore.storage.loadArchive(archive)!!).files[0]
+	// 	HuffmanCodec(file.contents)
+	// }
 	
 	// TODO: check this
 	public void Init()
@@ -240,6 +241,13 @@ class World
 		}
 	}
 	
+	public T? GetService<T>(Type type, bool searchSubclasses = false) where T : IService
+	{
+		if (searchSubclasses) {
+			return (T?) Services.FirstOrDefault((serv) => type.IsAssignableFrom(serv!.GetType()), null);
+		}
+		return (T?) Services.FirstOrDefault((serv) => serv!.GetType() == type, null);
+	}
 	
 	
 }

@@ -10,30 +10,30 @@ class NpcCombatDef
 	public const int DEFAULT_BLOCK_ANIMATION = 424;
 	public const int DEFAULT_DEATH_ANIMATION = 836;
 	
-	public int Hitpoints;
-	public List<int> Stats;
-	public int AttackSpeed;
-	public int AttackAnimation;
-	public int BlockAnimation;
-	public List<int> DeathAnimation;
-	public int RespawnDelay;
-	public int AggressiveRadius;
-	public int AggroTargetDelay;
-	public int AggressiveTimer;
-	public double PoisonChance;
-	public double VenomChance;
-	public bool PoisonImmunity;
-	public bool VenomImmunity;
-	public int SlayerReq;
-	public double SlayerXP;
-	public List<int> Bonuses;
-	public Set<Any> Species;
+	public int Hitpoints { get; private set; }
+	public List<int> Stats { get; private set; }
+	public int AttackSpeed { get; private set; }
+	public int AttackAnimation { get; private set; }
+	public int BlockAnimation { get; private set; }
+	public List<int> DeathAnimation { get; private set; }
+	public int RespawnDelay { get; private set; }
+	public int AggressiveRadius { get; private set; }
+	public int AggroTargetDelay { get; private set; }
+	public int AggressiveTimer { get; private set; }
+	public double PoisonChance { get; private set; }
+	public double VenomChance { get; private set; }
+	public bool PoisonImmunity { get; private set; }
+	public bool VenomImmunity { get; private set; }
+	public int SlayerReq { get; private set; }
+	public double SlayerXP { get; private set; }
+	public List<int> Bonuses { get; private set; }
+	public HashSet<object> Species { get; private set; }
 	
 	public NpcCombatDef(int hitpoints, List<int> stats, int attackSpeed, int attackAnimation,
 				int blockAnimation, List<int> deathAnimation, int respawnDelay, int aggressiveRadius,
 				int aggroTargetDelay, int aggressiveTimer, double poisonChance, double venomChance,
 				bool poisonImmunity, bool venomImmunity, int slayerReq, double slayerXP,
-				List<int> bonuses, Set<Any> species
+				List<int> bonuses, HashSet<object> species
 			)
 	{
 		Hitpoints = hitpoints;
@@ -58,7 +58,7 @@ class NpcCombatDef
 	
 	public static readonly NpcCombatDef DEFAULT = new NpcCombatDef(
 		DEFAULT_HITPOINTS,
-		new List<int> { 1, 1, 1, 1, 1},
+		new List<int> { 1, 1, 1, 1, 1 },
 		DEFAULT_ATTACK_SPEED,
 		DEFAULT_ATTACK_ANIMATION,
 		DEFAULT_BLOCK_ANIMATION,
@@ -74,7 +74,7 @@ class NpcCombatDef
 		1,
 		0.0,
 		new List<int>(),
-		new Set<Any>()
+		new HashSet<object>()
 	);
 	
 }

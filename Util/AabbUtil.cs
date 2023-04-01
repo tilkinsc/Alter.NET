@@ -5,7 +5,7 @@ namespace Util;
 // length1 = length1 + z1;
 // width2 = width2 + x2;
 // length2 = length2 + z2;
-class AabbUtil
+static class AabbUtil
 {
 	
 	public class Box
@@ -29,12 +29,12 @@ class AabbUtil
 		}
 	}
 	
-	private bool Between(int x1, int left, int right)
+	private static bool Between(int x1, int left, int right)
 	{
 		return x1 >= left && x1 <= right;
 	}
 	
-	public bool AreBordering(int x1, int z1, int width1, int length1,
+	public static bool AreBordering(int x1, int z1, int width1, int length1,
 							int x2, int z2, int width2, int length2)
 	{
 		Box a = new Box(x1, z1, width1 - 1, length1 - 1);
@@ -49,7 +49,7 @@ class AabbUtil
 		return true;
 	}
 	
-	public bool AreDiagonal(int x1, int z1, int width1, int length1,
+	public static bool AreDiagonal(int x1, int z1, int width1, int length1,
 							int x2, int z2, int width2, int length2)
 	{
 		Box a = new Box(x1, z1, width1 - 1, length1 - 1);
@@ -70,7 +70,7 @@ class AabbUtil
 		return false;
 	}
 	
-	public bool AreOverlapping(int x1, int z1, int width1, int length1,
+	public static bool AreOverlapping(int x1, int z1, int width1, int length1,
 							int x2, int z2, int width2, int length2)
 	{
 		Box a = new Box(x1, z1, width1 - 1, length1 - 1);

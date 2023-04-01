@@ -2,7 +2,7 @@ using System.Text;
 
 namespace Game.Model.Timer;
 
-class TimeConstants
+static class TimeConstants
 {
 	
 	public const long CYCLES_PER_MINUTE = 100;
@@ -18,79 +18,79 @@ class TimeConstants
 	public const long WEEK = 604800000;
 	public const long YEAR = 31449600000;
 	
-	public long? SecondsToCycles(long seconds)
+	public static long? SecondsToCycles(long seconds)
 	{
 		long secs = (long) (seconds * 0.6);
 		return secs > 0 ? secs : null;
 	}
 	
-	public long? MinutesToCycles(long minutes)
+	public static long? MinutesToCycles(long minutes)
 	{
 		long mins = minutes * CYCLES_PER_MINUTE;
 		return mins > 0 ? mins : null;
 	}
 	
-	public long? HoursToCycles(long hours)
+	public static long? HoursToCycles(long hours)
 	{
 		long hrs = hours * CYCLES_PER_HOUR;
 		return hrs > 0 ? hrs : null;
 	}
 	
-	public long? DaysToCycles(long days)
+	public static long? DaysToCycles(long days)
 	{
 		long d = days * CYCLES_PER_DAY;
 		return d > 0 ? d : null;
 	}
 	
-	public long? WeeksToCycles(long weeks)
+	public static long? WeeksToCycles(long weeks)
 	{
 		long wks = weeks * CYCLES_PER_WEEK;
 		return wks > 0 ? wks : null;
 	}
 	
-	public long? YearsToCycles(long years)
+	public static long? YearsToCycles(long years)
 	{
 		long yrs = years * CYCLES_PER_YEAR;
 		return yrs > 0 ? yrs : null;
 	}
 	
-	public long? CyclesToSeconds(long cycles)
+	public static long? CyclesToSeconds(long cycles)
 	{
 		long secs = (long) Math.Round(cycles / 0.6);
 		return secs > 0 ? secs : null;
 	}
 	
-	public long? CyclesToMinutes(long cycles)
+	public static long? CyclesToMinutes(long cycles)
 	{
 		long mins = (long) (cycles / (double) CYCLES_PER_MINUTE);
 		return mins > 0 ? mins : null;
 	}
 	
-	public long? CyclesToHours(long cycles)
+	public static long? CyclesToHours(long cycles)
 	{
 		long hrs = (long) (cycles / (double) CYCLES_PER_HOUR);
 		return hrs > 0 ? hrs : null;
 	}
 	
-	public long? CyclesToDays(long cycles)
+	public static long? CyclesToDays(long cycles)
 	{
 		long days = (long) (cycles / (double) CYCLES_PER_DAY);
 		return days > 0 ? days : null;
 	}
 	
-	public long? CyclesToWeeks(long cycles)
+	public static long? CyclesToWeeks(long cycles)
 	{
 		long wks = (long) (cycles / (double) CYCLES_PER_WEEK);
 		return wks > 0 ? wks : null;
 	}
 	
-	public long? CyclesToYears(long cycles)
+	public static long? CyclesToYears(long cycles)
 	{
 		long yrs = (long) (cycles / (double) CYCLES_PER_YEAR);
 		return yrs > 0 ? yrs : null;
 	}
 	
-	public string GetCyclesContext(long cycles)
+	public static string GetCyclesContext(long cycles)
 	{
 		long value = cycles;
 		double amount = 0.0;
@@ -130,12 +130,12 @@ class TimeConstants
 		else return $"{amount} year";
 	}
 	
-	public long TimePassed(long last)
+	public static long TimePassed(long last)
 	{
 		return Util.Time.CurrentTimeMillis() - last;
 	}
 	
-	public string GetTimeContext(long time)
+	public static string GetTimeContext(long time)
 	{
 		long value = time;
 		double amount = 0.0;
@@ -174,7 +174,7 @@ class TimeConstants
 		else return $"{amount} year";
 	}
 	
-	public string GetBriefTimeContext(long time)
+	public static string GetBriefTimeContext(long time)
 	{
 		string complete = GetCompleteTimeContext(time);
 		if (complete.Count((ch) => ch == ' ') > 2) {
@@ -184,7 +184,7 @@ class TimeConstants
 		return complete;
 	}
 	
-	public string GetCompleteTimeContext(long time)
+	public static string GetCompleteTimeContext(long time)
 	{
 		StringBuilder sb = new StringBuilder();
 		long value = time;

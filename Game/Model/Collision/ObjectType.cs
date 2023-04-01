@@ -22,4 +22,6 @@ class ObjectType
 		Group = group;
 	}
 	
+	// TODO: missing collection of enum values
+	
 }

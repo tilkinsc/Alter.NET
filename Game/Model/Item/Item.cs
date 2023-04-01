@@ -21,13 +21,13 @@ class Item
 	public Item(Item other)
 			: this(other.ID, other.Amount)
 	{
-		CopyAttr(other);
+		CopyAttributes(other);
 	}
 	
 	public Item(Item other, int amount)
 			: this(other.ID, other.Amount)
 	{
-		CopyAttr(other);
+		CopyAttributes(other);
 	}
 	
 	private ItemDef? GetDef(DefinitionSet defs)
@@ -39,16 +39,16 @@ class Item
 	{
 		ItemDef? def = GetDef(defs);
 		return (def.NoteTemplateId == 0 && def.NoteLinkId > 0) ?
-				new Item(def.NoteLinkId, Amount).CopyAttr(this)
-				: new Item(this).CopyAttr(this);
+				new Item(def.NoteLinkId, Amount).CopyAttributes(this)
+				: new Item(this).CopyAttributes(this);
 	}
 	
 	public Item ToUnnoted(DefinitionSet defs)
 	{
 		ItemDef? def = GetDef(defs);
 		return (def.NoteTemplateId > 0) ?
-				new Item(def.NoteLinkId, Amount).CopyAttr(this)
-				: new Item(this).CopyAttr(this);
+				new Item(def.NoteLinkId, Amount).CopyAttributes(this)
+				: new Item(this).CopyAttributes(this);
 	}
 	
 	public string GetName(DefinitionSet defs)
@@ -56,9 +56,14 @@ class Item
 		return ToUnnoted(defs).GetDef(defs).Name;
 	}
 	
-	public bool HasAttributes() => Attributes.Count > 0;
+	public bool HasAnyAttribute() => Attributes.Count > 0;
 	
-	public int? GetAttribute(ItemAttribute attrib) => Attributes[attrib];
+	public int? GetAttribute(ItemAttribute attrib)
+	{
+		if (!Attributes.ContainsKey(attrib))
+			return null;
+		return Attributes[attrib];
+	}
 	
 	public Item PutAttribute(ItemAttribute attrib, int value)
 	{
@@ -68,9 +73,8 @@ class Item
 	
 	public Item CopyAttributes(Item other)
 	{
-		if (other.HasAttributes()) {
+		if (other.HasAnyAttribute())
 			Attributes.Merge(other.Attributes);
-		}
 		return this;
 	}
 	

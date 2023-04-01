@@ -150,7 +150,7 @@ class ItemContainer : IEnumerable<Item.Item?>
 			Item.Item? item = _items[i];
 			if (item == null)
 				continue;
-			if (item.ID == itemId && (!skipAttribItems || !item.HasAttributes()))
+			if (item.ID == itemId && (!skipAttribItems || !item.HasAnyAttribute()))
 				return i;
 		}
 		return -1;

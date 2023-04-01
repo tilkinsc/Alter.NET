@@ -1,5 +1,3 @@
-using System.Collections;
-
 namespace Netty;
 
 class Deque<T>

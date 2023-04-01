@@ -18,7 +18,4 @@ static class DataConstants
 		}
 	}
 	
-	
-	
-	
 }

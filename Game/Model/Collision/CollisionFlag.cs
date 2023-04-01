@@ -50,4 +50,8 @@ class CollisionFlag
 		PROJECTILE_SOUTH_EAST
 	});
 	
+	public static List<CollisionFlag> GetFlags(bool projectiles) => projectiles ? PROJECTILE_FLAGS : PAWN_FLAGS;
+	public static List<CollisionFlag> PawnFlags() => PAWN_FLAGS;
+	public static List<CollisionFlag> ProjectileFlags() => PROJECTILE_FLAGS;
+	
 }

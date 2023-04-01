@@ -5,18 +5,6 @@ namespace Game.Model.Path;
 
 class PathRequest
 {
-	
-	public Tile Start;
-	public int SourceWidth;
-	public int SourceLength;
-	public Tile End;
-	public int TargetWidth;
-	public int TargetLength;
-	public int TouchRadius;
-	public bool ProjectilePath;
-	public List<ClipFlag> ClipFlags;
-	public List<Direction> BlockedDirections;
-	
 	public enum ClipFlag
 	{
 		DIAGONAL,
@@ -25,6 +13,17 @@ class PathRequest
 		NODE,
 		LINKED_NODE
 	}
+	
+	public Tile Start { get; private set; }
+	public int SourceWidth { get; private set; }
+	public int SourceLength { get; private set; }
+	public Tile End { get; private set; }
+	public int TargetWidth { get; private set; }
+	public int TargetLength { get; private set; }
+	public int TouchRadius { get; private set; }
+	public bool ProjectilePath { get; private set; }
+	public List<ClipFlag> ClipFlags { get; private set; }
+	public List<Direction> BlockedDirections { get; private set; }
 	
 	private PathRequest(Tile start, int sourceWidth, int sourceLength, Tile end, int targetWidth, int targetLength, int touchRadius, bool projectilePath, List<ClipFlag> clipFlags, List<Direction> blockedDirections)
 	{

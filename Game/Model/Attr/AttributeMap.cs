@@ -25,6 +25,15 @@ class AttributeMap
 	public bool IsEmpty() => !Attributes.Any();
 	public void Clear() => Attributes.Clear();
 	
+	public void RemoveIf(Func<AttributeKey, bool> predicate)
+	{
+		foreach (KeyValuePair<AttributeKey, object> itr in Attributes)
+		{
+			if (predicate(itr.Key))
+				Attributes.Remove(itr.Key);
+		}
+	}
+	
 	public Dictionary<string, AttributeKey> ToPersistentMap()
 	{
 		Dictionary<string, AttributeKey> map = new Dictionary<string, AttributeKey>();
@@ -36,5 +45,7 @@ class AttributeMap
 		}
 		return map;
 	}
+	
+	public object this[AttributeKey attrib] => Attributes[attrib];
 	
 }

@@ -9,7 +9,15 @@ https://github.com/AlterRSPS/Alter
 ## Finished Packages
 * Game.Event
 * Game.FS
-* Game.FS.Def
+* Game.Model.Appearance
+* Game.Model.Bits
+* Game.Model.Collision
+* Game.Model.Combat
+* Game.Model.Container
+* Game.Model.Item
+* Game.Model.Path (except: FutureRoute.cs)
+* Game.Model.Priv (except: PrivilegeSet.cs load function)
+* Game.Model.Timer
 
 ## Mostly Done
 * Runelite Cache

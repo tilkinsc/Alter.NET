@@ -3,6 +3,22 @@ namespace Game.Model.Timer;
 class TimerMap
 {
 	
+	public class PersistentTimer
+	{
+		public int TimeLeft;
+		public long CurrentMS;
+		public string? Identifier;
+		public bool TickOffline;
+		
+		public PersistentTimer(int timeLeft, long currentMS, string? identifier = null, bool tickOffline = true)
+		{
+			TimeLeft = timeLeft;
+			CurrentMS = currentMS;
+			Identifier = identifier;
+			TickOffline = tickOffline;
+		}
+	}
+	
 	public Dictionary<TimerKey, int> Timers = new Dictionary<TimerKey, int>();
 	
 	public int Get(TimerKey key)
@@ -24,22 +40,6 @@ class TimerMap
 	public bool Exists(TimerKey key) => Timers.ContainsKey(key);
 	public bool IsEmpty() => !Timers.Any();
 	public void Clear() => Timers.Clear();
-	
-	public class PersistentTimer
-	{
-		public int TimeLeft;
-		public long CurrentMS;
-		public string? Identifier;
-		public bool TickOffline;
-		
-		public PersistentTimer(int timeLeft, long currentMS, string? identifier = null, bool tickOffline = true)
-		{
-			TimeLeft = timeLeft;
-			CurrentMS = currentMS;
-			Identifier = identifier;
-			TickOffline = tickOffline;
-		}
-	}
 	
 	public List<PersistentTimer> ToPersistentTimers()
 	{

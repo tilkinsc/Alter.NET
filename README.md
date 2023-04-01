@@ -18,6 +18,7 @@ https://github.com/AlterRSPS/Alter
 * Game.Model.Path (except: FutureRoute.cs)
 * Game.Model.Priv (except: PrivilegeSet.cs load function)
 * Game.Model.Timer
+* Game.Model.Varp
 
 ## Mostly Done
 * Runelite Cache

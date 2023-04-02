@@ -1,6 +1,6 @@
 namespace Game.Model.Combat;
 
-enum AttachStyle
+enum AttackStyle
 {
 	NONE = -1,
 	ACCURATE = 0,

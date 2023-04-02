@@ -1,5 +1,6 @@
 using Exceptions;
 using Game.FS.Def;
+using Game.Model.Combat;
 using Game.Sync.Block;
 
 namespace Game.Model.Entity;
@@ -9,10 +10,10 @@ class Npc : Pawn
 	public const int RESET_PAWN_FACE_DELAY = 25;
 	public const int DEFAULT_NPC_STAT_COUNT = 5;
 	
+	private bool Active;
+	public Player? Owner;
 	public bool Respawns;
 	public int WalkRadius;
-	
-	private bool Active;
 	private int Hitpoints = 10;
 	public NpcCombatDef CombatDef;
 	public CombatClass CombatClass = CombatClass.MELEE;
@@ -24,9 +25,9 @@ class Npc : Pawn
 	public string Name => Def.Name;
 	public List<object> Species => CombatDef.Species;
 	
-	public int ID;
-	public Tile SpawnTile;
-	public Player? Owner;
+	public int ID { get; private set; }
+	public World World { get; private set; }
+	public Tile SpawnTile { get; private set; }
 	
 	private Npc(int id, World world, Tile spawnTile)
 			: base(world)

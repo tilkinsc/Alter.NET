@@ -10,7 +10,7 @@ The style guide is in place for these reasons:
 1. All variables should be in order of their Alter definition, unless they are defined below the constructor.
 2. All variables are to be defined above the constructor in order of their Alter definition.
 3. Retain all variable/class names to the best of your ability, unless they are shorthand names (i.e. attr -> attribute)
-4. Functions, if, while, and for statements should be defined like this,
+4. Functions, if, while, and for statements should be defined in Allman style,
 ```cs
 public void Example()
 {

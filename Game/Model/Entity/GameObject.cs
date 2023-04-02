@@ -8,11 +8,11 @@ namespace Game.Model.Entity;
 class GameObject : BaseEntity
 {
 	
-	public int ID;
-	public byte Settings;
+	public int ID { get; private set; }
+	public byte Settings { get; private set; }
 	
-	public AttributeMap AttributeMap = new AttributeMap();
-	public TimerMap TimerMap = new TimerMap();
+	public AttributeMap AttributeMap { get; private set; } = new AttributeMap();
+	public TimerMap TimerMap { get; private set; } = new TimerMap();
 	
 	public int Type { get => Settings >> 2; }
 	public int Rotation { get => Settings & 0x3; }
@@ -35,28 +35,32 @@ class GameObject : BaseEntity
 		return definitions.Get<ObjectDef>(ID);
 	}
 	
-	public bool IsSpawned(World world)
-	{
-		world.IsSpawned(this);
-	}
+	public bool IsSpawned(World world) => world.IsSpawned(this);
 	
 	public int GetTransform(Player player)
 	{
 		World world = player.World;
 		ObjectDef? def = GetObjectDef(world.Definitions);
 		
-		if (def.VarBit != -1) {
-			VarbitDef varbitDef = world.Definitions.get(VarbitDef::class.java, def.VarBit);
-			var state = player.Barps.GetBit(varbitDef.Varp, varbitDef.StartBit, varbitDef.EndBit);
+		if (def.VarBit != -1)
+		{
+			VarBitDef? varbitDef = world.Definitions.Get<VarBitDef>(def.VarBit);
+			int state = player.Varps.GetBit(varbitDef.Varp, varbitDef.StartBit, varbitDef.EndBit);
 			return def.Transforms[state];
 		}
 		
-		if (def.Varp != -1) {
+		if (def.Varp != -1)
+		{
 			var state = player.Varps.GetState(def.Varp);
 			return def.Transforms[state];
 		}
 		
-		return id;
+		return ID;
+	}
+	
+	public override string ToString()
+	{
+		return $"ToString not implemented";
 	}
 	
 }

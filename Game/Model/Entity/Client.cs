@@ -1,23 +1,12 @@
 using DotNetty.Transport.Channels;
 using Game.Message;
+using Game.System;
 using Net.Codec.Login;
 
 namespace Game.Model.Entity;
 
 class Client : Player
 {
-	
-	public static Client FromRequest(World world, LoginRequest request)
-	{
-		Client client = new Client(request.Channel, world);
-		client.ClientWidth = request.ClientWidth;
-		client.ClientHeight = request.ClientHeight;
-		client.LoginUsername = request.Username;
-		client.Username = request.Username;
-		client.UUID = request.UUID;
-		client.CurrentXteaKeys = request.XteaKeys;
-		return client;
-	}
 	
 	public GameSystem GameSystem;
 	public string LoginUsername;
@@ -32,7 +21,7 @@ class Client : Player
 	public int CameraYaw = 0;
 	public bool LogPackets = true;
 	
-	public IChannel Channel;
+	public IChannel Channel { get; private set; }
 	
 	public Client(IChannel channel, World world)
 			: base(world)
@@ -78,6 +67,18 @@ class Client : Player
 	public override string ToString()
 	{
 		return "ToString not implemented";
+	}
+	
+	public static Client FromRequest(World world, LoginRequest request)
+	{
+		Client client = new Client(request.Channel, world);
+		client.ClientWidth = request.ClientWidth;
+		client.ClientHeight = request.ClientHeight;
+		client.LoginUsername = request.Username;
+		client.Username = request.Username;
+		client.UUID = request.UUID;
+		client.CurrentXteaKeys = request.XteaKeys;
+		return client;
 	}
 	
 }

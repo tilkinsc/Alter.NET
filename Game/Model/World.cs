@@ -1,78 +1,84 @@
+using Cache;
 using Cache.FS;
+using Exceptions;
 using Game.FS;
 using Game.FS.Def;
 using Game.Model.Attr;
 using Game.Model.Collision;
 using Game.Model.Entity;
+using Game.Model.Instance;
+using Game.Model.Priv;
 using Game.Model.Region;
 using Game.Model.Timer;
 using Game.Service;
 using Game.Service.Xtea;
 using Game.Sync.Block;
+using Util;
 
 namespace Game.Model;
 
 class World
 {
+	public const int REJECT_LOGIN_REBOOT_THRESHOLD = 50;
 	
-	public GameContext GameContext;
-	public DevContext DevContext;
-	public RLStore FileStore;
-	public DefinitionSet Definitions;
-	public List<IService> Services;
-	// public CoroutineDispatcher CoroutineDispatcher;
-	// public QueueTaskSet Queues;
-	public PawnList<Player> Players;
-	public PawnList<Npc> Npcs;
-	public ChunkSet Chunks;
-	public CollisionManager Collision;
-	// public InstancedMapAllocator InstanceAllocator;
-	// public PluginRepository Plugins;
-	// public PrivilegeSet Privileges;
+	public GameContext GameContext { get; private set; }
+	public DevContext DevContext { get; private set; }
+	public RLStore? FileStore;
+	public DefinitionSet Definitions { get; private set; } = new DefinitionSet();
+	private HuffmanCodec? _huffman;
+	public HuffmanCodec Huffman {
+		get {
+			if (FileStore == null)
+				throw new RuntimeException("Attempt to initialize HuffmanCodec with null FileStore");
+			if (_huffman == null)
+			{
+				RLIndex? binary = FileStore.GetIndex(RLIndexType.BINARY);
+				RLArchive? archive = binary!.FindArchiveByName("huffman");
+				RLFSFile file = archive!.GetFiles(FileStore.Storage.LoadArchive(archive)!).Files[0];
+				_huffman = new HuffmanCodec(file.Contents!);
+			}
+			return _huffman;
+		}
+	}
+	public List<IService> Services { get; private set; } = new List<IService>();
+	// public CoroutineDispatcher? CoroutineDispatcher;
+	public QueueTaskSet Queues { get; private set; } = new WorldQueueTaskSet();
+	public PawnList<Player> Players { get; private set; }
+	public PawnList<Npc> Npcs { get; private set; }
+	public ChunkSet Chunks { get; private set; }
+	public CollisionManager Collision { get; private set; }
+	public InstancedMapAllocator InstanceAllocator { get; private set; } = new InstancedMapAllocator();
+	public PluginRepository Plugins { get; private set; }
+	public PrivilegeSet Privileges { get; private set; } = new PrivilegeSet();
 	public XTeaKeyService? XTeaKeyService;
-	public UpdateBlockSet PlayerUpdateBlocks;
-	public UpdateBlockSet NpcUpdateBlocks;
-	// public SecureRandom Random;
-	public TimerMap Timers;
-	public AttributeMap Attributes;
-	public List<GroundItem> GroundItems;
-	public List<GroundItem> GroundItemQueues;
+	public UpdateBlockSet PlayerUpdateBlocks { get; private set; } = new UpdateBlockSet();
+	public UpdateBlockSet NpcUpdateBlocks { get; private set; } = new UpdateBlockSet();
+	public Random Random { get; private set; } = new Random();
 	public int CurrentCycle = 0;
 	public bool MultiThreadPathfinding = false;
+	public TimerMap Timers { get; private set; } = new TimerMap();
+	public AttributeMap Attributes { get; private set; } = new AttributeMap();
 	public int RebootTimer = -1;
+	
+	private List<GroundItem> _groundItemQueues = new List<GroundItem>();
+	private List<GroundItem> _groundItems = new List<GroundItem>();
 	
 	public World(GameContext gameContext, DevContext devContext)
 	{
 		GameContext = gameContext;
 		DevContext = devContext;
-		// Queues = new WorldQueueTaskSet();
-		Players = new PawnList(new int[gameContext.PlayerLimit]);
-		Npcs = new PawnList(new Npc[UInt16.MaxValue]);
+		Players = new PawnList<Player>(new Player[gameContext.PlayerLimit]);
+		Npcs = new PawnList<Npc>(new Npc[Int16.MaxValue]);
+		Chunks = new ChunkSet(this);
 		Collision = new CollisionManager(Chunks);
-		// InstanceAllocator = new InstancedMapAllocator();
-		// Plugins = new PluginRepository(this);
-		// Privileges = new PrivilegeSet();
-		PlayerUpdateBlocks = new UpdateBlockSet();
-		NpcUpdateBlocks = new UpdateBlockSet();
-		// Random = new SecureRandom();
-		Timers = new TimerMap();
-		Attributes = new AttributeMap();
-		GroundItems = new List<GroundItem>();
-		GroundItemQueues = new List<GroundItem>();
+		Plugins = new PluginRepository(this);
 	}
-	
-	
-	// val huffman by lazy {
-	// 	val binary = filestore.getIndex(IndexType.BINARY)!!
-	// 	val archive = binary.FindArchiveByName("huffman")!!
-	// 	val file = archive.getFiles(filestore.storage.loadArchive(archive)!!).files[0]
-	// 	HuffmanCodec(file.contents)
-	// }
 	
 	// TODO: check this
 	public void Init()
 	{
-		foreach (List<GameService> service in GetService(typeof(GameService)))
+		GameService? service = GetService<GameService>(typeof(GameService));
+		if (service != null)
 		{
 			CoroutineDispatcher = service.Dispatcher;
 		}
@@ -86,7 +92,12 @@ class World
 	// TODO: fill this out
 	public void Cycle()
 	{
+		if (CurrentCycle++ >= Int32.MaxValue - 1)
+		{
+			CurrentCycle = 0;
+		}
 		
+		// TODO: I can't find out further due to the timers not being fileld out
 	}
 	
 	public void SendRebootTimer(int cycles = RebootTimer)

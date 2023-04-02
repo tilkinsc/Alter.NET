@@ -1,3 +1,7 @@
+using Game.Model.Container;
+using Game.Model.Priv;
+using Game.Model.Varp;
+
 namespace Game.Model.Entity;
 
 class Player : Pawn
@@ -32,7 +36,7 @@ class Player : Pawn
 	public int[] GPIInactivityFlags = new int[2048];
 	public int[] GPITileHashMultipliers = new int[2048];
 	public List<Npc> LocalNPCs = new List<Npc>();
-	public Appearance.Appearance Appearance = Appearance.DEFAULT_MALE;
+	public Appearance.Appearance Appearance = Model.Appearance.Appearance.DEFAULT_MALE;
 	public int[] Animations = new int[] { 808, 823, 819, 820, 821, 822, 824 };
 	public double Weight;
 	public int SkillIcon = -1;
@@ -47,7 +51,7 @@ class Player : Pawn
 	
 	private volatile bool PendingLogout;
 	private volatile bool SetDisconnectionTimer;
-	private Skillset Skillset = new SkillSet(World.GameContext.SkillCount);
+	private SkillSet Skillset = new SkillSet(World.GameContext.SkillCount);
 	private bool Appearimation;
 	
 	

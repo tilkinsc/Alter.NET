@@ -10,6 +10,7 @@ https://github.com/AlterRSPS/Alter
 * Game.Event
 * Game.FS
 * Game.Model.Appearance
+* Game.Model.Attr
 * Game.Model.Bits
 * Game.Model.Collision
 * Game.Model.Combat
@@ -19,6 +20,9 @@ https://github.com/AlterRSPS/Alter
 * Game.Model.Priv (except: PrivilegeSet.cs load function)
 * Game.Model.Timer
 * Game.Model.Varp
+* Game.Model.Weight
+
+
 
 ## Mostly Done
 * Runelite Cache

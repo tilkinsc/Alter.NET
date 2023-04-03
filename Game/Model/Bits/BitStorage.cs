@@ -21,7 +21,7 @@ class BitStorage
 	
 	private int GetPackedBits(Pawn p)
 	{
-		int? attrib = p.Attributes.Get(Key);
+		object? attrib = p.Attributes[Key];
 		if (attrib == null)
 			return 0;
 		return (int) attrib;

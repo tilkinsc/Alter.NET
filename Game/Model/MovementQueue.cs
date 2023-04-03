@@ -13,8 +13,8 @@ enum StepType
 class StepDirection
 {
 	
-	public Direction? WalkDirection;
-	public Direction? RunDirection;
+	public Direction? WalkDirection { get; private set; }
+	public Direction? RunDirection { get; private set; }
 	
 	public StepDirection(Direction? walkDirection, Direction? runDirection)
 	{
@@ -27,9 +27,9 @@ class StepDirection
 class Step
 {
 	
-	public Tile Tile;
-	public StepType Type;
-	public bool DetectCollision;
+	public Tile Tile { get; private set; }
+	public StepType Type { get; private set; }
+	public bool DetectCollision { get; private set; }
 	
 	public Step(Tile tile, StepType type, bool detectCollision)
 	{
@@ -43,9 +43,10 @@ class Step
 class MovementQueue
 {
 	
+	// TODO: this is supposed to be a Deque<Step>
 	public LinkedList<Step> Steps = new LinkedList<Step>();
 	
-	public Pawn Pawn;
+	public Pawn Pawn { get; private set; }
 	
 	public MovementQueue(Pawn pawn)
 	{
@@ -54,10 +55,10 @@ class MovementQueue
 	
 	public bool HasDestination()
 	{
-		return Steps.Any();
+		return Steps.Count > 0;
 	}
 	
-	public Tile? PeekLastTile()
+	public Tile? PeekLast()
 	{
 		LinkedListNode<Step>? last = Steps.Last;
 		if (last == null)
@@ -72,6 +73,8 @@ class MovementQueue
 			return null;
 		return last.Value;
 	}
+	
+	public void Clear() => Steps.Clear();
 	
 	private void AddStep(Tile current, Tile next, StepType type, bool detectCollision)
 	{
@@ -106,7 +109,7 @@ class MovementQueue
 	// TODO: fill this in
 	public void Cycle()
 	{
-		
+		.
 	}
 	
 }

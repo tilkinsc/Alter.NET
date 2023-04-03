@@ -8,25 +8,23 @@ namespace Game.Model.Entity;
 class Npc : Pawn
 {
 	public const int RESET_PAWN_FACE_DELAY = 25;
-	public const int DEFAULT_NPC_STAT_COUNT = 5;
 	
 	private bool Active;
 	public Player? Owner;
 	public bool Respawns;
 	public int WalkRadius;
 	private int Hitpoints = 10;
-	public NpcCombatDef CombatDef;
+	public NpcCombatDef? CombatDef;
 	public CombatClass CombatClass = CombatClass.MELEE;
 	public AttackStyle AttackStyle = AttackStyle.CONTROLLED;
 	public CombatStyle CombatStyle = CombatStyle.STAB;
-	public Stats Stats;
-	public Func<Npc, Player, bool> AggroCheck;
-	public NpcDef Def;
-	public string Name => Def.Name;
-	public List<object> Species => CombatDef.Species;
+	public NPCStats Stats;
+	public Func<Npc, Player, bool>? AggroCheck;
+	public NpcDef NpcDefinition { get; private set; }
+	public string Name => NpcDefinition.Name;
+	public HashSet<object> Species => CombatDef.Species;
 	
 	public int ID { get; private set; }
-	public World World { get; private set; }
 	public Tile SpawnTile { get; private set; }
 	
 	private Npc(int id, World world, Tile spawnTile)
@@ -36,8 +34,8 @@ class Npc : Pawn
 		World = world;
 		SpawnTile = spawnTile;
 		Tile = spawnTile;
-		Stats = new Stats(World.GameContext.NPCStatCount);
-		Def = World.Definitions.Get<NpcDef>(id);
+		Stats = new NPCStats(World.GameContext.NPCStatCount);
+		NpcDefinition = World.Definitions.Get<NpcDef>(id);
 		EntityType = EntityType.NPC;
 	}
 	
@@ -58,7 +56,11 @@ class Npc : Pawn
 	public override int GetSize() => World.Definitions.Get<NpcDef>(ID).Size;
 	public override int GetCurrentHP() => Hitpoints;
 	public override int GetMaxHP() => CombatDef.Hitpoints;
-	public override void SetCurrentHP(int level) => Hitpoints = level;
+	
+	public override void SetCurrentHP(int level)
+	{
+		Hitpoints = level;
+	}
 	
 	public override void AddBlock(UpdateBlockType block)
 	{
@@ -81,34 +83,42 @@ class Npc : Pawn
 	
 	public int GetTransform(Player player)
 	{
-		if (Def.VarBit != -1) {
-			VarBitDef varbitDef = World.Definitions.Get<VarBitDef>(Def.VarBit);
+		if (NpcDefinition.VarBit != -1) {
+			VarBitDef varbitDef = World.Definitions.Get<VarBitDef>(NpcDefinition.VarBit);
 			int state = player.Varps.GetBit(varbitDef.Varp, varbitDef.StartBit, varbitDef.EndBit);
-			return Def.Transforms[state];
+			return NpcDefinition.Transforms[state];
 		}
-		if (Def.Varp != -1) {
-			int state = player.Varps.GetState(Def.Varp);
-			return Def.Transforms[state];
+		if (NpcDefinition.Varp != -1) {
+			int state = player.Varps.GetState(NpcDefinition.Varp);
+			return NpcDefinition.Transforms[state];
 		}
 		return ID;
 	}
 	
-	public bool SetActive(bool active)
+	public void SetActive(bool active)
 	{
 		this.Active = active;
 	}
 	
-	public bool IsActive => Active;
+	public bool IsActive() => Active;
 	
-	public bool IsSpawned => Index > 0;
+	public bool IsSpawned() => Index > 0;
 	
-	class Stats
+	public override string ToString()
 	{
+		return $"ToString not implemeneted";
+	}
+	
+	public class NPCStats
+	{
+		public const int DEFAULT_NPC_STAT_COUNT = 5;
+		
 		private int[] CurrentLevels;
 		private int[] MaxLevels;
-		private int NStats;
 		
-		public Stats(int nStats)
+		public int NStats { get; private set; }
+		
+		public NPCStats(int nStats)
 		{
 			NStats = nStats;
 			CurrentLevels = new int[NStats];

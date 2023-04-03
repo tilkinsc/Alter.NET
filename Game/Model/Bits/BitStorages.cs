@@ -1,8 +1,8 @@
 namespace Game.Model.Bits;
 
-class BitStorages
+static class BitStorages
 {
-	public BitStorage INFINITE_VARS_STORAGE = new BitStorage("inf_vars");
+	public static readonly BitStorage INFINITE_VARS_STORAGE = new BitStorage("inf_vars");
 }
 
 class InfiniteVarsType : StorageBits

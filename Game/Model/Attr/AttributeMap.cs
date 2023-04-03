@@ -5,18 +5,12 @@ class AttributeMap
 	
 	private Dictionary<AttributeKey, object> Attributes = new Dictionary<AttributeKey, object>();
 	
-	public T? Get<T>(AttributeKey<T> key)
-	{
-		Attributes.TryGetValue(key, out object? val);
-		return (T?) val;
-	}
-	
 	public T? GetOrDefault<T>(AttributeKey<T> key, T def)
 	{
-		T? val = Get<T>(key);
-		if (val == null)
+		Attributes.TryGetValue(key, out object? value);
+		if (value == null)
 			return def;
-		return val;
+		return (T) value;
 	}
 	
 	public void Set<T>(AttributeKey<T> key, T val) where T : notnull => Attributes[key] = (object) val;
@@ -46,6 +40,17 @@ class AttributeMap
 		return map;
 	}
 	
-	public object this[AttributeKey attrib] => Attributes[attrib];
+	public object? this[AttributeKey key]
+	{
+		get
+		{
+			Attributes.TryGetValue(key, out object? val);
+			return val;
+		}
+		set
+		{
+			Attributes[key] = value!;
+		}
+	}
 	
 }

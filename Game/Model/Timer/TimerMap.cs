@@ -1,3 +1,5 @@
+using System.Collections;
+
 namespace Game.Model.Timer;
 
 class TimerMap
@@ -20,7 +22,7 @@ class TimerMap
 	}
 	
 	public Dictionary<TimerKey, int> Timers = new Dictionary<TimerKey, int>();
-	
+
 	public int Get(TimerKey key)
 	{
 		Timers.TryGetValue(key, out int val);

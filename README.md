@@ -15,6 +15,7 @@ https://github.com/AlterRSPS/Alter
 * Game.Model.Collision
 * Game.Model.Combat
 * Game.Model.Container
+* Game.Model.Entity (except: Npc.cs Pawn.cs Player.cs)
 * Game.Model.Item
 * Game.Model.Path (except: FutureRoute.cs)
 * Game.Model.Priv (except: PrivilegeSet.cs load function)

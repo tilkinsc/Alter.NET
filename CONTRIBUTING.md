@@ -42,5 +42,6 @@ public void Example()
 10. Enums that are more than just one int field should be a class. Enum class fields must be implemeneted with readonly. See Game.Model.Direction.cs for an example.
 11. Class constants should be defined at the top of a class.
 12. Static class fields inside a non-static class should be defined below the instantiable members (at the bottom).
-
+13. Class fields that are set by a constructor must be in their own cluster of variables above the first constructor.
+14. Constructors must be grouped together in the area below the variables.
 

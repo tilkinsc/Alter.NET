@@ -3,8 +3,8 @@ namespace Net.Codec.Login;
 class LoginResponse
 {
 	
-	public int Index;
-	public int Privilege;
+	public int Index { get; private set; }
+	public int Privilege { get; private set; }
 	
 	public LoginResponse(int index, int privilege)
 	{

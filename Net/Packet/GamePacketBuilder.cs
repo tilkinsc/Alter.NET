@@ -103,17 +103,65 @@ class GamePacketBuilder
 				} else {
 					Buffer.WriteByte((byte) (longValue >> 8));
 					Buffer.WriteByte((byte) (longValue));
-					Buffer.WriteByte((byte) ());
-					Buffer.WriteByte((byte) ());
-					Buffer.WriteByte((byte) ());
+					Buffer.WriteByte((byte) (longValue >> 24));
+					Buffer.WriteByte((byte) (longValue >> 16));
 				}
 				break;
 			case DataOrder.INVERSE_MIDDLE:
+				if (transformation != DataTransformation.NONE)
+					throw new IllegalArgumentException("Inversed middle endian can't be transformed");
+				if (type != DataType.INT && type != DataType.MEDIUM)
+					throw new IllegalArgumentException("Inversed middle endian can only be used with integer and medium values");
 				
+				if (type == DataType.MEDIUM)
+				{
+					Buffer.WriteByte((byte) (longValue));
+					Buffer.WriteByte((byte) (longValue >> 16));
+					Buffer.WriteByte((byte) (longValue >> 8));
+				}
+				else
+				{
+					Buffer.WriteByte((byte) (longValue >> 16));
+					Buffer.WriteByte((byte) (longValue >> 24));
+					Buffer.WriteByte((byte) (longValue));
+					Buffer.WriteByte((byte) (longValue >> 8));
+					
+				}
 				break;
 			default:
 				throw new IllegalArgumentException("Unknown order");
 		}
 	}
+	
+	public void Put(DataType type, DataOrder order, Number value)
+	{
+		Put(type, order, DataTransformation.NONE, value);
+	}
+	
+	public void Put(DataType type, DataTransformation transformation, Number value)
+	{
+		Put(type, DataOrder.BIG, transformation, value);
+	}
+	
+	public void Put(DataType type, Number value)
+	{
+		Put(type, DataOrder.BIG, DataTransformation.NONE, value);
+	}
+	
+	public void PutBits(int numBits, int value)
+	{
+		
+	}
+	
+	public void PutBit(int value)
+	{
+		PutBits(1, value);
+	}
+	
+	public void PutBit(bool flag)
+	{
+		PutBit(flag ? 1 : 0);
+	}
+	
 	
 }

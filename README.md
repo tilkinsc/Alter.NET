@@ -18,14 +18,20 @@ https://github.com/AlterRSPS/Alter
 * Game.Model.Entity (except: Npc.cs Pawn.cs Player.cs)
 * Game.Model.Item
 * Game.Model.Path (except: FutureRoute.cs)
-* Game.Model.Priv (except: PrivilegeSet.cs load function)
+* Game.Model.Priv (except: PrivilegeSet.cs)
+* Game.Model.Shop
 * Game.Model.Timer
 * Game.Model.Varp
 * Game.Model.Weight
+* Net.Packet (except: GamePacketBuilder.cs GamePacketReader.cs)
+* Net.Codec
 
+## TODO (Not comprehensive)
+* Game.Model.Entity
+* Game.Model.Region
+* Game.Model.Instance
 
 
 ## Mostly Done
 * Runelite Cache
 * Util
-* Net (except: Codec/Login/LoginDecoderState.cs, Packet/GamePacketBuilder.cs, Packet/GamePacketReader.cs)

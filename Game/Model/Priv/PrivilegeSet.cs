@@ -6,13 +6,13 @@ namespace Game.Model.Priv;
 class PrivilegeSet : IEnumerable<Privilege>
 {
 	
-	public List<Privilege> Values { get; private set; }
+	public List<Privilege> Values { get; private set; } = null!;
 	
 	public PrivilegeSet()
 	{
 	}
 	
-	// TODO: public void load(ServerProperties properties) {}
+	public void load(ServerProperties properties) {}
 	
 	public Privilege? Get(int id) => Values.FirstOrDefault(priv => priv?.ID == id, null);
 	public Privilege? Get(string name) => Values.FirstOrDefault(priv => priv?.Name == name.ToLower(), null);

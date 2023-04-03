@@ -7,7 +7,7 @@ namespace Game.Model.Item;
 class Item
 {
 	
-	public int ID;
+	public int ID { get; private set; }
 	public int Amount;
 	
 	public Dictionary<ItemAttribute, int> Attributes = new Dictionary<ItemAttribute, int>();

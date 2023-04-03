@@ -3,9 +3,9 @@ namespace Net.Codec.Filestore;
 class FilestoreResponse : IEquatable<FilestoreResponse>
 {
 	
-	public int Index;
-	public int Archive;
-	public byte[] Data;
+	public int Index { get; private set; }
+	public int Archive { get; private set; }
+	public byte[] Data { get; private set; }
 	
 	public FilestoreResponse(int index, int archive, byte[] data)
 	{

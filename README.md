@@ -23,7 +23,7 @@ https://github.com/AlterRSPS/Alter
 * Game.Model.Timer
 * Game.Model.Varp
 * Game.Model.Weight
-* Net.Packet (except: GamePacketBuilder.cs GamePacketReader.cs)
+* Net.Packet (except: GamePacketReader.cs)
 * Net.Codec
 
 ## TODO (Not comprehensive)
